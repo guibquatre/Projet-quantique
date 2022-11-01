@@ -1,6 +1,5 @@
 # Projet-quantique Vendredi 11 Novembre 23H00
-## Emmanuelle Bouchard, Félix, Elliot, Guillaume Blouin
-
+## Emmanuelle Bouchard, Félix Moras, Elliot XXX, Guillaume Blouin
 
 |Fichiers|Dossiers|Description|
 |:---|---|---:|
@@ -14,7 +13,7 @@
 
 
 Obtenir un environnement virtuel et pycodestyle
-```
+```bash
 sudo apt install pycodestyle
 pycodestyle -vv main.py
 sudo apt install python3-venv
