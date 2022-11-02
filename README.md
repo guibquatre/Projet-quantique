@@ -1,5 +1,5 @@
 # Projet-quantique Vendredi 11 Novembre 23H00
-## Emmanuelle Bouchard, Félix Moras, Elliot XXX, Guillaume Blouin
+## Emmanuelle Bouchard, Félix Moras, Elliot Ouellet, Guillaume Blouin
 
 |Fichiers|Dossiers|Description|
 |:---|---|---:|
