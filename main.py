@@ -30,6 +30,8 @@ class QuantumOperations:
     def init_a_state(self, state_init_state: np.ndarray) -> np.ndarray:
         return self.state
 
+    
+
     #Fonction qui ajoute une version contrôlé d'une porte quantique (argument1:)
 
     #Fonction qui réorganise les qubits d'une porte quantique (argument1: porte, argument2: ordre des qubits)
