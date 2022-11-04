@@ -22,9 +22,13 @@ if __name__== "__main__":
 
     probabilities_b_state_from_0  = b_state_from_0 * np.conjugate(b_state_from_0)
     probabilities_b_state_from_j  = np.real(b_state_from_j * np.conjugate(b_state_from_j))
+    probabilities_b_state_from_0_imag  = np.imag(b_state_from_0 * np.conjugate(b_state_from_0))
+
 
     print(b_state_from_0)
     print(probabilities_b_state_from_0)
+    print(probabilities_b_state_from_0_imag)
+
     print(b_state_from_j)
     print(probabilities_b_state_from_j)
 
