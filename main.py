@@ -14,7 +14,18 @@ ih_gate = np.kron(i_gate, h_gate)
 b_circuit = cx_gate @ ih_gate
 
 if __name__== "__main__":
-    init_state = np.array([1,0,0,0]).T
-    b_state = b_circuit @ init_state
-    print(b_state)
+    init_state_0 = np.array([1,0,0,0]).T
+    init_state_i = np.array([1j,0,0,0]).T
+
+    b_state_from_0 = b_circuit @ init_state_0
+    b_state_from_j = b_circuit @ init_state_i
+
+    probabilities_b_state_from_0  = b_state_from_0 * np.conjugate(b_state_from_0)
+    probabilities_b_state_from_j  = np.real(b_state_from_j * np.conjugate(b_state_from_j))
+
+    print(b_state_from_0)
+    print(probabilities_b_state_from_0)
+    print(b_state_from_j)
+    print(probabilities_b_state_from_j)
+
 
