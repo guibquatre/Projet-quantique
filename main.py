@@ -75,4 +75,5 @@ if __name__== "__main__":
     # print(treasure_door.init_state)
     print(treasure_door.normalProductOnSelfAsCircuit1(premierPalierTreasureDoorCircuit))
     # print(premierPalierTreasureDoorCircuit@treasure_door.init_state)
-
+    xc_gate = tensorProductOnDoors(i_gate, x_gate)
+    np.testing.assert_equal(np.any(np.not_equal(xc_gate, cx_gate)), True)
