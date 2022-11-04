@@ -11,8 +11,15 @@
 [Environnement virtuel python sur ubuntu ou gitBash](https://thkernel.medium.com/comment-cr%C3%A9er-un-environnement-virtuel-python-sur-ubuntu-18-04-gikspirit-3fad29d284e1)
 [Environnement virtuel python sur macOs](https://www.studytonight.com/post/python-virtual-environment-setup-on-mac-osx-easiest-way)
 
+## Creer une branche github
+```
+git checkout -b nomDeBranche
+git push
+```
+Suivre les étapes que git vous dit
 
-Obtenir un environnement virtuel et pycodestyle
+
+## Obtenir un environnement virtuel et pycodestyle
 ```bash
 sudo apt install pycodestyle
 pycodestyle -vv main.py
