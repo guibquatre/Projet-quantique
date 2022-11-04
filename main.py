@@ -20,20 +20,20 @@ def tensorProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarr
 class QuantumOperations:
     init_state = None
 
-    def init_a_state(self, init_state: np.ndarray) -> np.ndarray:
-        return self.state
+    def __init__(self, _init_state: np.ndarray) -> np.ndarray:
+        self.init_state = _init_state.T
 
     def tensorProductOnSelfAsCircuit1(self, circuit2: np.ndarray) -> np.ndarray:
-        return np.kron(circuit2, self)
+        return np.kron(circuit2, self.init_state)
 
     def tensorProductOnSelfAsCircuit2(self, circuit1: np.ndarray) -> np.ndarray:
-        return np.kron(self, circuit1)
+        return np.kron(self.init_state, circuit1)
 
     def normalProductOnSelfAsCircuit1(self, circuit2: np.ndarray) -> np.ndarray:
-        return circuit2 @ self
+        return circuit2 @ self.init_state
 
     def normalProductOnSelfAsCircuit2(self, circuit1: np.ndarray) -> np.ndarray:
-        return self @ circuit1
+        return self.init_state @ circuit1
 # Fin Class QuantumOperations ----------------------------------------------------------------
 #----------------------------------------------------------------------------------------------
 
@@ -63,16 +63,16 @@ if __name__== "__main__":
     # print(type(init_state_0))
 #---------------------------------------------------------------------------------------------------
 # Premier circuit, la porte du trésor
-    #Création objet
-    treasure_door = QuantumOperations()
-    #État initial 
-    treasure_door.init_a_state(np.array([1,0,0,0,0,0,0,0]))
+    #Création objet et état initial
+    treasure_door = QuantumOperations(np.array([1,0,0,0,0,0,0,0]))
+    assert(np.array_equal(treasure_door.init_state, np.array([1,0,0,0,0,0,0,0])))
     #Produit tensoriel entre une porte h et une identité à un qubit 
     ih_gate = tensorProductOnDoors(h_gate, i_gate)
     #Circuit de Bell, état produit des portes quantiques cx_gate multiplié par ih_gate
     b_circuit = normalProductOnDoors(ih_gate, cx_gate)
-    premierPalierTreasureDoorCircuit = normalProductOnDoors(b_circuit, h_gate)
+    premierPalierTreasureDoorCircuit = tensorProductOnDoors(b_circuit, h_gate)
     # print(premierPalierTreasureDoorCircuit)
-    print(treasure_door.normalProductOnSelfAsCircuit2(premierPalierTreasureDoorCircuit))
-
+    # print(treasure_door.init_state)
+    print(treasure_door.normalProductOnSelfAsCircuit1(premierPalierTreasureDoorCircuit))
+    # print(premierPalierTreasureDoorCircuit@treasure_door.init_state)
 
