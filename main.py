@@ -10,6 +10,9 @@ cx_gate = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
 #Produits tensoriels de portes quantiques
 ih_gate = np.kron(i_gate, h_gate)
 
+#Paire de Bell, état produit des portes quantiques cx_gate multiplié par ih_gate
+b_circuit = cx_gate @ ih_gate
+
 if __name__== "__main__":
     print("hello")
 
