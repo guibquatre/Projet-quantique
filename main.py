@@ -43,9 +43,7 @@ if __name__== "__main__":
     x_gate = np.array([[0,1],[1,0]])
     h_gate = np.sqrt(0.5) * np.array([[1,1],[1,-1]])
     cx_gate = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
-    #Produits tensoriels de portes quantiques
-    #Circuit de Bell, état produit des portes quantiques cx_gate multiplié par ih_gate
-
+# Opérations vues en classe
 #-------------------------------------------------------------------------------------------------
     # Opérations préparatoires à 1 et 2 qubits
     # init_state_0 = np.array([1,0,0,0]).T
@@ -68,12 +66,12 @@ if __name__== "__main__":
     assert(np.array_equal(treasure_door.init_state, np.array([1,0,0,0,0,0,0,0])))
     #Produit tensoriel entre une porte h et une identité à un qubit 
     ih_gate = tensorProductOnDoors(h_gate, i_gate)
-    #Circuit de Bell, état produit des portes quantiques cx_gate multiplié par ih_gate
+    #Construire circuit de Bell, produit des portes quantiques cx_gate multiplié par ih_gate
     b_circuit = normalProductOnDoors(ih_gate, cx_gate)
     premierPalierTreasureDoorCircuit = tensorProductOnDoors(b_circuit, h_gate)
-    # print(premierPalierTreasureDoorCircuit)
-    # print(treasure_door.init_state)
-    print(treasure_door.normalProductOnSelfAsCircuit1(premierPalierTreasureDoorCircuit))
-    # print(premierPalierTreasureDoorCircuit@treasure_door.init_state)
+    premierPalierTreasureDoorState = treasure_door.normalProductOnSelfAsCircuit1(premierPalierTreasureDoorCircuit)
+    print(premierPalierTreasureDoorState)
+    # Construire porte c_not à l'envers
     xc_gate = tensorProductOnDoors(i_gate, x_gate)
     np.testing.assert_equal(np.any(np.not_equal(xc_gate, cx_gate)), True)
+    
