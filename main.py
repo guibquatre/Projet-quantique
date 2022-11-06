@@ -86,14 +86,20 @@ class QuantumOperations:
 #----------------------------------------------------------------------------------------------
 # Application principale
 if __name__== "__main__":
-    # Définitions des portes quantiques à deux qubits
+    # Définitions des portes quantiques à un et deux qubits
     i_gate = np.array([[1,0],[0,1]])
     x_gate = np.array([[0,1],[1,0]])
     h_gate = np.sqrt(0.5) * np.array([[1,1],[1,-1]])
+    xc_gate = np.array([[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0]])
     cx_gate = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
-# Opérations vues en classe
+# TO DO
+# Porte swap 
+
+    # cx_gate2 = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
+    # np.testing.assert_equal(np.any(np.not_equal(cx_gate, xc_gate)), True)
+    # np.testing.assert_equal(cx_gate, cx_gate2)
 #-------------------------------------------------------------------------------------------------
-    # Opérations préparatoires à 1 et 2 qubits
+# Opérations préparatoires vues en cours à 1 et 2 qubits
     # init_state_0 = np.array([1,0,0,0]).T
     # init_state_i = np.array([1j,0,0,0]).T
     # b_state_from_0 = b_circuit @ init_state_0
@@ -101,14 +107,9 @@ if __name__== "__main__":
     # probabilities_b_state_from_0  = b_state_from_0 * np.conjugate(b_state_from_0)
     # probabilities_b_state_from_j  = np.real(b_state_from_j * np.conjugate(b_state_from_j))
     # probabilities_b_state_from_0_imag  = np.imag(b_state_from_0 * np.conjugate(b_state_from_0))
-    # print(b_state_from_0)
-    # print(probabilities_b_state_from_0)
-    # print(probabilities_b_state_from_0_imag)
-    # print(b_state_from_j)
-    # print(probabilities_b_state_from_j)
-    # print(type(init_state_0))
 #---------------------------------------------------------------------------------------------------
 # Premier circuit, la porte du trésor
+# Premier pallier
     #Création objet et état initial
     treasure_door = QuantumOperations(np.array([1,0,0,0,0,0,0,0]))
     assert(np.array_equal(treasure_door.init_state, np.array([1,0,0,0,0,0,0,0])))
@@ -119,8 +120,8 @@ if __name__== "__main__":
     premierPalierTreasureDoorCircuit = tensorProductOnDoors(b_circuit, h_gate)
     premierPalierTreasureDoorState = treasure_door.normalProductOnSelfAsCircuit1(premierPalierTreasureDoorCircuit)
     print(premierPalierTreasureDoorState)
-    # Construire porte c_not à l'envers
-    xc_gate = tensorProductOnDoors(i_gate, x_gate)
-    np.testing.assert_equal(np.any(np.not_equal(xc_gate, cx_gate)), True)
     # Tester le décorateur, utilisez numpy pour créer un état initial devrait s'écrire au terminal
-    caca = QuantumOperations(8)
+    # erreur = QuantumOperations(8)
+#----------------------------------------------------------------------------------------------------------
+# Deuxieme pallier
+
