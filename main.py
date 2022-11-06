@@ -1,12 +1,24 @@
 #!/usr/bin/python3
 import numpy as np
+from functools import wraps
+import traceback
+import sys
 
-# Les exceptions ne sont pas encore gérées, à utiliser avec précaution
 def normalProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
-    return circuit2 @ circuit1
+    try:
+        return circuit2 @ circuit1
+    except Exception as e:
+        print("Problème avec normalProductOnDoors")
+        traceback.print_exc()
+        sys.exit(1)
 
 def tensorProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
+    try:
         return np.kron(circuit2, circuit1)
+    except Exception as e:
+        print("Problème avec tensorProductOnDoors")
+        traceback.print_exc()
+        sys.exit(1)    
 
 #TO DO
 #Fonction qui ajoute une version contrôlé d'une porte quantique (argument1: circuit||Porte)
@@ -20,20 +32,56 @@ def tensorProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarr
 class QuantumOperations:
     init_state = None
 
+    # S'assurer que l'état initital n'est pas autre chose qu'une np.ndarray()
+    def np_ndarray_required(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            if args[0] is not np.ndarray:
+                print("utilisez numpy pour créer un état initial")
+                sys.exit(1)
+            return f(*args, **kwargs)
+        return decorated
+
+    @np_ndarray_required
     def __init__(self, _init_state: np.ndarray) -> np.ndarray:
-        self.init_state = _init_state.T
+        try:
+            self.init_state = _init_state.T
+        except Exception as e:
+            print("Problème avec constructeur de QuantumOperations")
+            traceback.print_exc()
+            sys.exit(1)
 
     def tensorProductOnSelfAsCircuit1(self, circuit2: np.ndarray) -> np.ndarray:
-        return np.kron(circuit2, self.init_state)
+        try:
+            return np.kron(circuit2, self.init_state)
+        except Exception as e:
+            print("Problème avec tensorProductOnSelfAsCircuit1")
+            traceback.print_exc()
+            sys.exit(1)
 
     def tensorProductOnSelfAsCircuit2(self, circuit1: np.ndarray) -> np.ndarray:
-        return np.kron(self.init_state, circuit1)
+        try:
+            return np.kron(self.init_state, circuit1)
+        except Exception as e:
+            print("Problème avec tensorProductOnSelfAsCircuit2")
+            traceback.print_exc()
+            sys.exit(1)
 
     def normalProductOnSelfAsCircuit1(self, circuit2: np.ndarray) -> np.ndarray:
-        return circuit2 @ self.init_state
+        try:
+            return circuit2 @ self.init_state
+        except Exception as e:
+            print("Problème avec normalProductOnSelfAsCircuit1")
+            traceback.print_exc()
+            sys.exit(1)
 
     def normalProductOnSelfAsCircuit2(self, circuit1: np.ndarray) -> np.ndarray:
-        return self.init_state @ circuit1
+        try:
+            return self.init_state @ circuit1
+        except Exception as e:
+            print("Problème avec normalProductOnSelfAsCircuit2")
+            traceback.print_exc()
+            sys.exit(1)
 # Fin Class QuantumOperations ----------------------------------------------------------------
 #----------------------------------------------------------------------------------------------
 
@@ -74,4 +122,4 @@ if __name__== "__main__":
     # Construire porte c_not à l'envers
     xc_gate = tensorProductOnDoors(i_gate, x_gate)
     np.testing.assert_equal(np.any(np.not_equal(xc_gate, cx_gate)), True)
-    
+    caca = QuantumOperations(8)
