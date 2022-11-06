@@ -36,7 +36,7 @@ class QuantumOperations:
     def np_ndarray_required(f):
         @wraps(f)
         def decorated(*args, **kwargs):
-            if args[0] is not np.ndarray:
+            if not isinstance(args[1], np.ndarray):
                 print("utilisez numpy pour créer un état initial")
                 sys.exit(1)
             return f(*args, **kwargs)
@@ -84,7 +84,7 @@ class QuantumOperations:
             sys.exit(1)
 # Fin Class QuantumOperations ----------------------------------------------------------------
 #----------------------------------------------------------------------------------------------
-
+# Application principale
 if __name__== "__main__":
     # Définitions des portes quantiques à deux qubits
     i_gate = np.array([[1,0],[0,1]])
@@ -122,4 +122,5 @@ if __name__== "__main__":
     # Construire porte c_not à l'envers
     xc_gate = tensorProductOnDoors(i_gate, x_gate)
     np.testing.assert_equal(np.any(np.not_equal(xc_gate, cx_gate)), True)
+    # Tester le décorateur, utilisez numpy pour créer un état initial devrait s'écrire au terminal
     caca = QuantumOperations(8)
