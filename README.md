@@ -1,5 +1,12 @@
 # Projet-quantique Vendredi 11 Novembre 23H00
-## Emmanuelle Bouchard, Félix Moras, Elliot Ouellet, Guillaume Blouin
+# Emmanuelle Bouchard, Félix Moras, Elliot Ouellet, Guillaume Blouin
+## Python 3.10 est requis pour démarrer le programme main.py
+## Vous devez avoir numpy et matplotlib pour python3.10
+`python3.10 -m pip install numpy matplotlib`
+#### Assurez vous d'avoir un environnement virtuel au besoin et lancez le programme avec Python3.10
+### Telechargez le rendu visuel pour MatplotLib
+`sudo apt-get install python3-tk
+`
 
 |Fichiers|Dossiers|Description|
 |:---|---|---:|
@@ -16,7 +23,7 @@
 git checkout -b nomDeBranche
 git push
 ```
-Suivre les étapes que git vous dit
+##### Suivre les étapes que git vous dit
 
 
 ## Obtenir un environnement virtuel et pycodestyle
@@ -30,3 +37,8 @@ source projet-quantique-env/bin/activate
 pip install numpy
 pip install matplotlib
 ```
+
+# Démarrer le programme, soyez à la racine du dépôt et écrivez la commande
+`python main.py`
+`python3 main.py`
+`python3.10 main.py`
