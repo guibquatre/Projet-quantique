@@ -36,5 +36,5 @@ jobs:
           sudo apt install python3.9
           python --version
           pip install numpy
-          pit install matplotlib
+          pip install matplotlib
           python main.py
