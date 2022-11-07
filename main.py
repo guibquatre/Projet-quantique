@@ -3,7 +3,9 @@ import numpy as np
 from functools import wraps
 import traceback
 import sys
-from matplotlib import pyplot as plt 
+from matplotlib import pyplot as plt
+import math  
+NEGATE_THE_NUMBER = -1
 
 def normalProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
     try:
@@ -19,7 +21,11 @@ def tensorProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarr
     except Exception as e:
         print("Problème avec tensorProductOnDoors")
         # traceback.print_exc()
-        sys.exit(1)    
+        sys.exit(1)   
+
+def ry_gate(θ):
+    return np.array([[math.cos(θ/2), (math.sin(θ/2)*NEGATE_THE_NUMBER)],\
+                    [math.sin(θ/2), math.cos(θ/2)]])
 
 #TO DO
 #Fonction qui ajoute une version contrôlé d'une porte quantique (argument1: circuit||Porte)
@@ -203,5 +209,5 @@ if __name__== "__main__":
 # Fin porte au trésor-------------------------------------------------------------------------------------
 # Start counts--------------------------------------------------------------------------------------------
     treasure_door.show(treasure_door.sample_state(1000000))
-
+# 
 
