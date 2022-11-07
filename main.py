@@ -81,7 +81,7 @@ class QuantumOperations:
             return circuit2 @ self.init_state
         except Exception as e:
             print("Problème avec normalProductOnSelfAsCircuit1")
-            # traceback.print_exc()
+            traceback.print_exc()
             sys.exit(1)
 
     def normalProductOnSelfAsCircuit2(self, circuit1: np.ndarray) -> np.ndarray:
@@ -137,10 +137,71 @@ class QuantumOperations:
                     print("une erreur s'est produite au moment de compiler les résultats")
             index+=1
         return dictOfResults
+
+    def sample_state_4qubits(self, shots: int) -> dict:
+        probabilities  = self.getProbabilitiesOfInitState()
+        components = ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ", "α1", "β1", "γ1", "δ1", "ε1", "ζ1", "η1", "θ1"]
+        results = np.random.choice(components, shots, p=probabilities)
+        index = 0
+        dictOfResults = dict()
+        dictOfResults["α"] = 0
+        dictOfResults["β"] = 0
+        dictOfResults["γ"] = 0
+        dictOfResults["δ"] = 0
+        dictOfResults["ε"] = 0
+        dictOfResults["ζ"] = 0
+        dictOfResults["η"] = 0
+        dictOfResults["θ"] = 0
+        dictOfResults["α1"] = 0
+        dictOfResults["β1"] = 0
+        dictOfResults["γ1"] = 0
+        dictOfResults["δ1"] = 0
+        dictOfResults["ε1"] = 0
+        dictOfResults["ζ1"] = 0
+        dictOfResults["η1"] = 0
+        dictOfResults["θ1"] = 0
+        while index < results.size:
+            match results[index]:
+                case "α":
+                    dictOfResults["α"]+=1
+                case "β":
+                    dictOfResults["β"]+=1
+                case "γ":
+                    dictOfResults["γ"]+=1
+                case "δ":
+                    dictOfResults["δ"]+=1
+                case "ε":
+                    dictOfResults["ε"]+=1        
+                case "ζ":
+                    dictOfResults["ζ"]+=1
+                case "η":
+                    dictOfResults["η"]+=1
+                case "θ":
+                    dictOfResults["θ"]+=1
+                case "α1":
+                    dictOfResults["α1"]+=1
+                case "β1":
+                    dictOfResults["β1"]+=1
+                case "γ1":
+                    dictOfResults["γ1"]+=1
+                case "δ1":
+                    dictOfResults["δ1"]+=1
+                case "ε1":
+                    dictOfResults["ε1"]+=1        
+                case "ζ1":
+                    dictOfResults["ζ1"]+=1
+                case "η1":
+                    dictOfResults["η1"]+=1
+                case "θ1":
+                    dictOfResults["θ1"]+=1
+                case _:
+                    print("une erreur s'est produite au moment de compiler les résultats")
+            index+=1
+        return dictOfResults
     
     def show(self, _dictOfResults: dict):
         print(_dictOfResults)
-        plt.title("Matplotlib demo") 
+        plt.title("stateVectors") 
         plt.bar(*zip(*_dictOfResults.items()))
         plt.show()
 
@@ -164,6 +225,15 @@ if __name__== "__main__":
     # c est en haut de h
     hc_gate = np.array([[1,0,0,0],[0, UN_SUR_RACINE_DE_DEUX, 0, UN_SUR_RACINE_DE_DEUX],\
                         [0,0,1,0],[0, UN_SUR_RACINE_DE_DEUX, 0, UN_SUR_RACINE_DE_DEUX*NEGATE_THE_NUMBER]])
+    # On va essayer d'obtenir la prochaine porte commentée par calcul
+    # xiic_gate = np.array([[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\
+    #                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\
+    #                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\
+    #                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\
+    #                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\
+    #                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\
+    #                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],\
+    #                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
     swap_gate = normalProductOnDoors(normalProductOnDoors(xc_gate, cx_gate), xc_gate)
     xx_gate = tensorProductOnDoors(x_gate, x_gate)
     # Trois qubits
@@ -221,19 +291,68 @@ if __name__== "__main__":
     ry_gate_for_monty_hall = ry_gate_function(MONTY_HALL_GLOBAL_START_COMPONENT)
     tensored_i_ry_gate_monty = tensorProductOnDoors(i_gate, ry_gate_for_monty_hall)
     hc__i_ry_gate_monty = normalProductOnDoors(hc_gate, tensored_i_ry_gate_monty)
-    monty_hall_first_part = QuantumOperations(np.array([1,0,0,0,0,0,0,0]))
+    monty_hall_init_state_4qubits = QuantumOperations(np.array([1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]))
     # Tensored gates (prepared for first part) to apply on initial state
-    tensored_i_with_hc__i_ry_gate_monty = tensorProductOnDoors(i_gate, hc__i_ry_gate_monty)
+    tensored_i_with_hc_with_i_ry_gate_monty = tensorProductOnDoors(i_gate, hc__i_ry_gate_monty)
     tensored_xc_with_i = tensorProductOnDoors(xc_gate, i_gate)
     tensored_i_with_xc = tensorProductOnDoors(i_gate, xc_gate)
     tensored_i_with_i_with_x = tensorProductOnDoors(i_gate, tensorProductOnDoors(i_gate, x_gate))
-    # Monter le circuit monty hall sur 3 qubits pour la première partie
-    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_hc__i_ry_gate_monty)
-    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_xc_with_i)
-    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_xc)
-    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_i_with_x)
-    # monty_hall_first_part.show(monty_hall_first_part.sample_state(100))
-    # Deuxieme partie de monty hall
-    monty_hall_init_second_part = QuantumOperations(monty_hall_first_part.init_state)
-    # monty_hall_init_second_part.show(monty_hall_init_second_part.sample_state(100))
+    # Monter la première partie du circuit sur quatre qubits
+    monty_hall_first_circuit = normalProductOnDoors(normalProductOnDoors(normalProductOnDoors(tensored_i_with_i_with_x,\
+         tensored_i_with_xc), tensored_xc_with_i), tensored_i_with_hc_with_i_ry_gate_monty)
+    # Monter monty_hall sur 4 qubits
+    monty_hall_first_circuit_on_4qubits = tensorProductOnDoors(i_gate, monty_hall_first_circuit)
+    print(monty_hall_init_state_4qubits.normalProductOnSelfAsCircuit1(monty_hall_first_circuit_on_4qubits))
+    # Le programme est bon jusqu'a ici
+#----------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------------
     
+    
+    
+    
+    
+    # # print(monty_hall_init_state.normalProductOnSelfAsCircuit1(monty_hall_first_circuit))
+    # # monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_hc__i_ry_gate_monty)
+    # # monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_xc_with_i)
+    # # monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_xc)
+    # # monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_i_with_x)
+    # # monty_hall_first_part.show(monty_hall_first_part.sample_state(100))
+    # # # Deuxieme partie de monty hall
+    # # monty_hall_init_second_part = QuantumOperations(monty_hall_first_part.init_state)
+    # # # print(monty_hall_init_second_part.init_state)
+    # # # monty_hall_init_second_part.show(monty_hall_init_second_part.sample_state(100))
+    
+    # # print(monty_hall_first_circuit_on_4qubits)
+    # # monty_hall_init_state_4qubits.init_state = monty_hall_init_state_4qubits.normalProductOnSelfAsCircuit1(monty_hall_first_circuit_on_4qubits)
+    # # monty_hall_init_state_4qubits.show(monty_hall_init_state_4qubits.sample_state(1000000))
+    # # print(monty_hall_second_part_on_4qubits.init_state)
+    # # print(monty_hall_second_part_on_4qubits.init_state)
+    # # # Obtenir la porte CNOT avec le contrôle sur qubit3 et target sur qubit4
+    # tensored_xc_gate_with_i = tensorProductOnDoors(xc_gate, i_gate)
+    # tensored_xc_gate_with_i_with_i = tensorProductOnDoors(tensored_xc_gate_with_i, i_gate)
+    # # Preparer les etapes pour construire xiic_gate
+    # swap_on_3qubit_the_first_and_the_second_qubit_gate = tensorProductOnDoors(i_gate, swap_gate)
+    # swap_on_4qubit_the_first_and_the_second_qubit_gate = tensorProductOnDoors(i_gate,\
+    #                                                     swap_on_3qubit_the_first_and_the_second_qubit_gate)
+    # swap_on_3qubit_the_second_and_the_third_qubit_gate = tensorProductOnDoors(swap_gate, i_gate)
+    # swap_on_4qubit_the_second_and_the_third_qubit_gate = tensorProductOnDoors(i_gate,\
+    #                                                     swap_on_3qubit_the_second_and_the_third_qubit_gate)
+    # # Build xiic_gate
+    # xiic_gate_first_step = normalProductOnDoors(swap_on_4qubit_the_first_and_the_second_qubit_gate,\
+    #                                              tensored_xc_gate_with_i_with_i)
+    # xiic_gate = normalProductOnDoors(swap_on_4qubit_the_first_and_the_second_qubit_gate,\
+    #                                             xiic_gate_first_step)
+    # # Build hcii_gate
+    # hcii_gate_first_step = tensorProductOnDoors(hc_gate, i_gate)
+    # hcii_gate = tensorProductOnDoors(hcii_gate_first_step, i_gate)
+    # # # print(hcii_gate)
+    # # # print(monty_hall_second_part_on_4qubits.init_state)
+    # # # Do circuit second part of monty hall circuit
+    # # monty_hall_second_part_first_step = QuantumOperations(monty_hall_second_part_on_4qubits.normalProductOnSelfAsCircuit1(xiic_gate))
+    # # # print(monty_hall_second_part_first_step.init_state)
+    # monty_hall_add_second_circuit_first_part = normalProductOnDoors(xiic_gate, monty_hall_first_circuit_on_4qubits)
+    # monty_hall_add_second_circuit_last_part = normalProductOnDoors(hcii_gate,monty_hall_add_second_circuit_first_part)
+    # # # monty_hall_second_part_last_step = QuantumOperations(monty_hall_second_part_first_step.normalProductOnSelfAsCircuit1(hcii_gate))
+    # # # monty_hall_second_part_last_step.show(monty_hall_second_part_last_step.sample_state(100))
+    # monty_hall_init_state_4qubits.init_state = normalProductOnDoors(monty_hall_add_second_circuit_first_part, monty_hall_init_state_4qubits.init_state)
+    # monty_hall_init_state_4qubits.show(monty_hall_init_state_4qubits.sample_state(1000000))
