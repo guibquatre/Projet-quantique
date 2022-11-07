@@ -3,7 +3,7 @@ import numpy as np
 from functools import wraps
 import traceback
 import sys
-import random
+from matplotlib import pyplot as plt 
 
 def normalProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
     try:
@@ -128,8 +128,15 @@ class QuantumOperations:
                 case _:
                     print("une erreur s'est produite au moment de compiler les résultats")
             index+=1
-        print(dictOfResults)
         return dictOfResults
+    
+    def show(self, _dictOfResults: dict):
+        print(_dictOfResults)
+        plt.title("Matplotlib demo") 
+        plt.bar(*zip(*_dictOfResults.items()))
+        plt.show()
+
+
 # Fin Class QuantumOperations ----------------------------------------------------------------
 #----------------------------------------------------------------------------------------------
 # Application principale
@@ -170,6 +177,7 @@ if __name__== "__main__":
     treasure_door = QuantumOperations(np.array([1,0,0,0,0,0,0,0]))
     assert(np.array_equal(treasure_door.init_state, np.array([1,0,0,0,0,0,0,0])))
     #Construire circuit de Bell, produit des portes quantiques cx_gate multiplié par ih_gate
+    #u_circuit = np.matmul(cx_gate, ih_gate)
     b_circuit = normalProductOnDoors(xc_gate, ih_gate)
     circuit_1er_palier = tensorProductOnDoors(h_gate, b_circuit)
     # Premier palier produit
@@ -194,6 +202,6 @@ if __name__== "__main__":
     print("treasure_door: ", treasure_door.init_state)
 # Fin porte au trésor-------------------------------------------------------------------------------------
 # Start counts--------------------------------------------------------------------------------------------
-    treasure_door.sample_state(1000000)
+    treasure_door.show(treasure_door.sample_state(1000000))
 
 

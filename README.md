@@ -21,6 +21,7 @@ Suivre les étapes que git vous dit
 
 ## Obtenir un environnement virtuel et pycodestyle
 ```bash
+sudo apt-get install python3-tk
 sudo apt install pycodestyle
 pycodestyle -vv main.py
 sudo apt install python3-venv
