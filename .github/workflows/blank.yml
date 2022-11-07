@@ -39,4 +39,4 @@ jobs:
           python3.9 --version
           pip install numpy
           pip install matplotlib
-          python3 main.py
+          python3.9 main.py
