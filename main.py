@@ -6,6 +6,8 @@ import sys
 from matplotlib import pyplot as plt
 import math  
 NEGATE_THE_NUMBER = -1
+MONTY_HALL_GLOBAL_START_COMPONENT = 2*math.acos(1/math.sqrt(3))
+UN_SUR_RACINE_DE_DEUX = 1/math.sqrt(2)
 
 def normalProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
     try:
@@ -23,7 +25,7 @@ def tensorProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarr
         # traceback.print_exc()
         sys.exit(1)   
 
-def ry_gate(θ):
+def ry_gate_function(θ: float) -> np.ndarray:
     return np.array([[math.cos(θ/2), (math.sin(θ/2)*NEGATE_THE_NUMBER)],\
                     [math.sin(θ/2), math.cos(θ/2)]])
 
@@ -100,9 +102,9 @@ class QuantumOperations:
             sys.exit(1)
     
     def sample_state(self, shots: int) -> dict:
-        probabilities_treasure_door  = treasure_door.getProbabilitiesOfInitState()
+        probabilities  = self.getProbabilitiesOfInitState()
         components = ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ"]
-        results = np.random.choice(components, shots, p=probabilities_treasure_door)
+        results = np.random.choice(components, shots, p=probabilities)
         index = 0
         dictOfResults = dict()
         dictOfResults["α"] = 0
@@ -155,8 +157,13 @@ if __name__== "__main__":
     ih_gate = tensorProductOnDoors(i_gate, h_gate)
     xi_gate = tensorProductOnDoors(x_gate, i_gate)
     xii_gate = tensorProductOnDoors(xi_gate, i_gate)
+    # x est en haut de c
     cx_gate = np.array([[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0]])
+    # c est en haut de x
     xc_gate = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
+    # c est en haut de h
+    hc_gate = np.array([[1,0,0,0],[0, UN_SUR_RACINE_DE_DEUX, 0, UN_SUR_RACINE_DE_DEUX],\
+                        [0,0,1,0],[0, UN_SUR_RACINE_DE_DEUX, 0, UN_SUR_RACINE_DE_DEUX*NEGATE_THE_NUMBER]])
     swap_gate = normalProductOnDoors(normalProductOnDoors(xc_gate, cx_gate), xc_gate)
     xx_gate = tensorProductOnDoors(x_gate, x_gate)
     # Trois qubits
@@ -194,8 +201,8 @@ if __name__== "__main__":
 #----------------------------------------------------------------------------------------------------------
 # Deuxieme palier
     xi_cx_circuit = normalProductOnDoors(xi_gate, cx_gate)
-    xi_cx_i_gate = tensorProductOnDoors(xi_cx_circuit, i_gate)
-    cix__xi_cx_i_circuit = normalProductOnDoors(cix_gate, xi_cx_i_gate)
+    tensored_xi_cx_i_gate = tensorProductOnDoors(xi_cx_circuit, i_gate)
+    cix__xi_cx_i_circuit = normalProductOnDoors(cix_gate, tensored_xi_cx_i_gate)
     circuit_2e_palier = normalProductOnDoors(xii_gate, cix__xi_cx_i_circuit)
     treasure_door.init_state = treasure_door.normalProductOnSelfAsCircuit1(circuit_2e_palier)
     # print(treasure_door.init_state)
@@ -205,9 +212,28 @@ if __name__== "__main__":
     # print(treasure_door.init_state)
 # Quatrième et dernier palier
     treasure_door.init_state = normalProductOnDoors(treasure_door.init_state, circuit_2e_palier)
-    print("treasure_door: ", treasure_door.init_state)
-# Fin porte au trésor-------------------------------------------------------------------------------------
-# Start counts--------------------------------------------------------------------------------------------
-    treasure_door.show(treasure_door.sample_state(1000000))
-# 
-
+    # print("treasure_door: ", treasure_door.init_state)
+# Fin porte au trésor----------------------------------------------------------------------------------------
+# Start counts for treasure door-----------------------------------------------------------------------------
+    # treasure_door.show(treasure_door.sample_state(1000000))
+# End counts for treasure door--------------------------------------------------------------------------------
+# Start Monty Hall--------------------------------------------------------------------------------------------
+    ry_gate_for_monty_hall = ry_gate_function(MONTY_HALL_GLOBAL_START_COMPONENT)
+    tensored_i_ry_gate_monty = tensorProductOnDoors(i_gate, ry_gate_for_monty_hall)
+    hc__i_ry_gate_monty = normalProductOnDoors(hc_gate, tensored_i_ry_gate_monty)
+    monty_hall_first_part = QuantumOperations(np.array([1,0,0,0,0,0,0,0]))
+    # Tensored gates (prepared for first part) to apply on initial state
+    tensored_i_with_hc__i_ry_gate_monty = tensorProductOnDoors(i_gate, hc__i_ry_gate_monty)
+    tensored_xc_with_i = tensorProductOnDoors(xc_gate, i_gate)
+    tensored_i_with_xc = tensorProductOnDoors(i_gate, xc_gate)
+    tensored_i_with_i_with_x = tensorProductOnDoors(i_gate, tensorProductOnDoors(i_gate, x_gate))
+    # Monter le circuit monty hall sur 3 qubits pour la première partie
+    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_hc__i_ry_gate_monty)
+    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_xc_with_i)
+    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_xc)
+    monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_i_with_x)
+    # monty_hall_first_part.show(monty_hall_first_part.sample_state(100))
+    # Deuxieme partie de monty hall
+    monty_hall_init_second_part = QuantumOperations(monty_hall_first_part.init_state)
+    # monty_hall_init_second_part.show(monty_hall_init_second_part.sample_state(100))
+    
