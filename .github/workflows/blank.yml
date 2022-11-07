@@ -33,7 +33,7 @@ jobs:
       - name: Run a multi-line script
         run: |
           sudo apt update
-          sudo apt install python3.10
+          sudo apt install python3.9
           python --version
           pip install numpy
           pit install matplotlib
