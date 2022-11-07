@@ -6,18 +6,18 @@ import sys
 
 def normalProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
     try:
-        return circuit2 @ circuit1
+        return circuit1 @ circuit2
     except Exception as e:
         print("Problème avec normalProductOnDoors")
-        traceback.print_exc()
+        # traceback.print_exc()
         sys.exit(1)
 
 def tensorProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
     try:
-        return np.kron(circuit2, circuit1)
+        return np.kron(circuit1, circuit2)
     except Exception as e:
         print("Problème avec tensorProductOnDoors")
-        traceback.print_exc()
+        # traceback.print_exc()
         sys.exit(1)    
 
 #TO DO
@@ -48,7 +48,7 @@ class QuantumOperations:
             self.init_state = _init_state.T
         except Exception as e:
             print("Problème avec constructeur de QuantumOperations")
-            traceback.print_exc()
+            # traceback.print_exc()
             sys.exit(1)
 
     def tensorProductOnSelfAsCircuit1(self, circuit2: np.ndarray) -> np.ndarray:
@@ -56,7 +56,7 @@ class QuantumOperations:
             return np.kron(circuit2, self.init_state)
         except Exception as e:
             print("Problème avec tensorProductOnSelfAsCircuit1")
-            traceback.print_exc()
+            # traceback.print_exc()
             sys.exit(1)
 
     def tensorProductOnSelfAsCircuit2(self, circuit1: np.ndarray) -> np.ndarray:
@@ -64,7 +64,7 @@ class QuantumOperations:
             return np.kron(self.init_state, circuit1)
         except Exception as e:
             print("Problème avec tensorProductOnSelfAsCircuit2")
-            traceback.print_exc()
+            # traceback.print_exc()
             sys.exit(1)
 
     def normalProductOnSelfAsCircuit1(self, circuit2: np.ndarray) -> np.ndarray:
@@ -72,7 +72,7 @@ class QuantumOperations:
             return circuit2 @ self.init_state
         except Exception as e:
             print("Problème avec normalProductOnSelfAsCircuit1")
-            traceback.print_exc()
+            # traceback.print_exc()
             sys.exit(1)
 
     def normalProductOnSelfAsCircuit2(self, circuit1: np.ndarray) -> np.ndarray:
@@ -80,7 +80,7 @@ class QuantumOperations:
             return self.init_state @ circuit1
         except Exception as e:
             print("Problème avec normalProductOnSelfAsCircuit2")
-            traceback.print_exc()
+            # traceback.print_exc()
             sys.exit(1)
 # Fin Class QuantumOperations ----------------------------------------------------------------
 #----------------------------------------------------------------------------------------------
@@ -90,11 +90,16 @@ if __name__== "__main__":
     i_gate = np.array([[1,0],[0,1]])
     x_gate = np.array([[0,1],[1,0]])
     h_gate = np.sqrt(0.5) * np.array([[1,1],[1,-1]])
-    xc_gate = np.array([[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0]])
-    cx_gate = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
+    #Produit tensoriel entre une porte h et une identité à un qubit 
+    ih_gate = tensorProductOnDoors(i_gate, h_gate)
+    xi_gate = tensorProductOnDoors(x_gate, i_gate)
+    xii_gate = tensorProductOnDoors(xi_gate, i_gate)
+    cx_gate = np.array([[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0]])
+    xc_gate = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
+
     # Trois qubits
     # |ψ⟩ = α |000⟩ + β |001⟩ + γ |010⟩ + δ |011⟩ + ε |100⟩ + ζ |101⟩ + η |110⟩ + θ |111⟩ .
-    xic_gate = np.array([[1,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,0,0,1,0,0],[0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,1],[0,0,0,0,0,0,1,0]])
+    cix_gate = np.array([[1,0,0,0,0,0,0,0],[0,1,0,0,0,0,0,0],[0,0,1,0,0,0,0,0],[0,0,0,1,0,0,0,0],[0,0,0,0,0,1,0,0],[0,0,0,0,1,0,0,0],[0,0,0,0,0,0,0,1],[0,0,0,0,0,0,1,0]])
 # TO DO
 # Porte swap 
     # cx_gate2 = np.array([[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0]])
@@ -115,15 +120,21 @@ if __name__== "__main__":
     #Création objet et état initial
     treasure_door = QuantumOperations(np.array([1,0,0,0,0,0,0,0]))
     assert(np.array_equal(treasure_door.init_state, np.array([1,0,0,0,0,0,0,0])))
-    #Produit tensoriel entre une porte h et une identité à un qubit 
-    ih_gate = tensorProductOnDoors(h_gate, i_gate)
     #Construire circuit de Bell, produit des portes quantiques cx_gate multiplié par ih_gate
-    b_circuit = normalProductOnDoors(ih_gate, cx_gate)
-    premierPalierTreasureDoorCircuit = tensorProductOnDoors(b_circuit, h_gate)
-    premierPalierTreasureDoorState = treasure_door.normalProductOnSelfAsCircuit1(premierPalierTreasureDoorCircuit)
-    print(premierPalierTreasureDoorState)
+    b_circuit = normalProductOnDoors(xc_gate, ih_gate)
+    premierPalierTreasureDoorCircuit = tensorProductOnDoors(h_gate, b_circuit)
+    # Premier palier produit
+    treasure_door.init_state = treasure_door.normalProductOnSelfAsCircuit1(premierPalierTreasureDoorCircuit)
+    print(treasure_door.init_state)
     # Tester le décorateur, utilisez numpy pour créer un état initial devrait s'écrire au terminal
     # erreur = QuantumOperations(8)
 #----------------------------------------------------------------------------------------------------------
-# Deuxieme pallier
+# Deuxieme palier
+    xi_cx_circuit = normalProductOnDoors(xi_gate, cx_gate)
+    xi_cx_i_gate = tensorProductOnDoors(xi_cx_circuit, i_gate)
+    cix__xi_cx_i_circuit = normalProductOnDoors(cix_gate, xi_cx_i_gate)
+    xii__cix__xi_cx_i_circuit_2e_palier = normalProductOnDoors(xii_gate, cix__xi_cx_i_circuit)
+    # Deuxieme palier produit
+    treasure_door.init_state = treasure_door.normalProductOnSelfAsCircuit1(xii__cix__xi_cx_i_circuit_2e_palier)
+    print(treasure_door.init_state)
 
