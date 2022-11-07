@@ -2,8 +2,7 @@
 # Emmanuelle Bouchard, Félix Moras, Elliot Ouellet, Guillaume Blouin
 ## Python 3.10 est requis pour démarrer le programme main.py
 ## Vous devez avoir numpy et matplotlib pour python3.10
-`python3.10 -m pip install numpy matplotlib`
-#### Assurez vous d'avoir un environnement virtuel au besoin et lancez le programme avec Python3.10
+#### Si vous avez des problèmes, rendez-vous dans le workflow voir le fichier blank.yml et rouler le multi-script à la fin
 ### Telechargez le rendu visuel pour MatplotLib
 `sudo apt-get install python3-tk
 `
