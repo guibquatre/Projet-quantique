@@ -42,7 +42,7 @@ jobs:
           sudo apt install curl -y
           curl -sSL https://bootstrap.pypa.io/get-pip.py -o get-pip.py
           python3.10 get-pip.py
-          pip3.10 --version
+          pip --version
           python3.10 -m pip install numpy
           python3.10 -m pip install matplotlib
           python3.10 main.py
