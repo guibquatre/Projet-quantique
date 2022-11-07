@@ -126,7 +126,7 @@ if __name__== "__main__":
     circuit_1er_palier = tensorProductOnDoors(h_gate, b_circuit)
     # Premier palier produit
     treasure_door.init_state = treasure_door.normalProductOnSelfAsCircuit1(circuit_1er_palier)
-    print(treasure_door.init_state)
+    # print(treasure_door.init_state)
     # Tester le décorateur, utilisez numpy pour créer un état initial devrait s'écrire au terminal
     # erreur = QuantumOperations(8)
 #----------------------------------------------------------------------------------------------------------
@@ -135,13 +135,12 @@ if __name__== "__main__":
     xi_cx_i_gate = tensorProductOnDoors(xi_cx_circuit, i_gate)
     cix__xi_cx_i_circuit = normalProductOnDoors(cix_gate, xi_cx_i_gate)
     circuit_2e_palier = normalProductOnDoors(xii_gate, cix__xi_cx_i_circuit)
-    # Deuxieme palier produit
     treasure_door.init_state = treasure_door.normalProductOnSelfAsCircuit1(circuit_2e_palier)
-    print(treasure_door.init_state)
+    # print(treasure_door.init_state)
 # Troisieme palier
     circuit_3e_Palier = tensorProductOnDoors(i_gate, normalProductOnDoors(xx_gate, swap_gate))
     treasure_door.init_state = treasure_door.normalProductOnSelfAsCircuit1(circuit_3e_Palier)
-    print(treasure_door.init_state)
+    # print(treasure_door.init_state)
 # Quatrième et dernier palier
     print(normalProductOnDoors(treasure_door.init_state, circuit_2e_palier))
 # Fin porte au trésor-------------------------------------------------------------------------------------
