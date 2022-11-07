@@ -3,6 +3,7 @@ import numpy as np
 from functools import wraps
 import traceback
 import sys
+import random
 
 def normalProductOnDoors(circuit1 :np.ndarray, circuit2: np.ndarray) -> np.ndarray:
     try:
@@ -82,6 +83,53 @@ class QuantumOperations:
             print("Problème avec normalProductOnSelfAsCircuit2")
             # traceback.print_exc()
             sys.exit(1)
+
+    def getProbabilitiesOfInitState(self):
+        try:
+            print("Probabilities: ",(self.init_state * np.conjugate(self.init_state)))
+            return self.init_state * np.conjugate(self.init_state)
+        except Exception as e:
+            print("Problème avec getProbabilitiesOfInitState")
+            # traceback.print_exc()
+            sys.exit(1)
+    
+    def sample_state(self, shots: int) -> dict:
+        probabilities_treasure_door  = treasure_door.getProbabilitiesOfInitState()
+        components = ["α", "β", "γ", "δ", "ε", "ζ", "η", "θ"]
+        results = np.random.choice(components, shots, p=probabilities_treasure_door)
+        index = 0
+        dictOfResults = dict()
+        dictOfResults["α"] = 0
+        dictOfResults["β"] = 0
+        dictOfResults["γ"] = 0
+        dictOfResults["δ"] = 0
+        dictOfResults["ε"] = 0
+        dictOfResults["ζ"] = 0
+        dictOfResults["η"] = 0
+        dictOfResults["θ"] = 0
+        while index < results.size:
+            match results[index]:
+                case "α":
+                    dictOfResults["α"]+=1
+                case "β":
+                    dictOfResults["β"]+=1
+                case "γ":
+                    dictOfResults["γ"]+=1
+                case "δ":
+                    dictOfResults["δ"]+=1
+                case "ε":
+                    dictOfResults["ε"]+=1        
+                case "ζ":
+                    dictOfResults["ζ"]+=1
+                case "η":
+                    dictOfResults["η"]+=1
+                case "θ":
+                    dictOfResults["θ"]+=1
+                case _:
+                    print("une erreur s'est produite au moment de compiler les résultats")
+            index+=1
+        print(dictOfResults)
+        return dictOfResults
 # Fin Class QuantumOperations ----------------------------------------------------------------
 #----------------------------------------------------------------------------------------------
 # Application principale
@@ -142,5 +190,10 @@ if __name__== "__main__":
     treasure_door.init_state = treasure_door.normalProductOnSelfAsCircuit1(circuit_3e_Palier)
     # print(treasure_door.init_state)
 # Quatrième et dernier palier
-    print(normalProductOnDoors(treasure_door.init_state, circuit_2e_palier))
+    treasure_door.init_state = normalProductOnDoors(treasure_door.init_state, circuit_2e_palier)
+    print("treasure_door: ", treasure_door.init_state)
 # Fin porte au trésor-------------------------------------------------------------------------------------
+# Start counts--------------------------------------------------------------------------------------------
+    treasure_door.sample_state(1000000)
+
+
