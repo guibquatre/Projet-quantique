@@ -146,10 +146,22 @@ class QuantumOperations:
         results = np.random.choice(components, shots, p=probabilities)
         index = 0
         dictOfResults = dict()
-        dictOfResults["α"], dictOfResults["β"], dictOfResults["γ"], dictOfResults["δ"] = 0
-        dictOfResults["ε"], dictOfResults["ζ"], dictOfResults["η"], dictOfResults["θ"] = 0
-        dictOfResults["α1"], dictOfResults["β1"], dictOfResults["γ1"], dictOfResults["δ1"] = 0
-        dictOfResults["ε1"], dictOfResults["ζ1"], dictOfResults["η1"], dictOfResults["θ1"] = 0
+        dictOfResults["α"] = 0
+        dictOfResults["β"] = 0
+        dictOfResults["γ"] = 0
+        dictOfResults["δ"] = 0
+        dictOfResults["ε"] = 0
+        dictOfResults["ζ"] = 0
+        dictOfResults["η"] = 0
+        dictOfResults["θ"] = 0
+        dictOfResults["α1"] = 0
+        dictOfResults["β1"] = 0
+        dictOfResults["γ1"] = 0
+        dictOfResults["δ1"] = 0
+        dictOfResults["ε1"] = 0
+        dictOfResults["ζ1"] = 0
+        dictOfResults["η1"] = 0
+        dictOfResults["θ1"] = 0
         while index < results.size:
             match results[index]:
                 case "α":
@@ -293,14 +305,16 @@ if __name__== "__main__":
                                         i_xc_gate), xc_i_gate), i_hc__i_ry_gate)
     # Monter monty_hall sur 4 qubits
     monty_hall_first_circuit_on_4qubits = tensorProductOnDoors(i_gate, monty_hall_first_circuit)
-    print(monty_hall.normalProductOnSelfAsCircuit1(monty_hall_first_circuit_on_4qubits))
-    # Le programme est bon jusqu'a ici
+    # print(monty_hall.normalProductOnSelfAsCircuit1(monty_hall_first_circuit_on_4qubits))
 #----------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------
-    
-    
-    
-    
+    # monty_hall_first_part = monty_hall.normalProductOnSelfAsCircuit1(monty_hall_first_circuit_on_4qubits)
+    # print(normalProductOnDoors(monty_hall_first_part, xiic_gate))
+    hcii_gate = tensorProductOnDoors(tensorProductOnDoors(hc_gate, i_gate), i_gate)
+    monty_hall_second_circuit = normalProductOnDoors(hcii_gate, xiic_gate)
+    monty_hall_circuit = normalProductOnDoors(monty_hall_second_circuit, monty_hall_first_circuit_on_4qubits)
+    monty_hall.init_state = monty_hall.normalProductOnSelfAsCircuit1(monty_hall_circuit)
+    monty_hall.show(monty_hall.sample_state_4qubits(1000))
     
     # # print(monty_hall_init_state.normalProductOnSelfAsCircuit1(monty_hall_first_circuit))
     # # monty_hall_first_part.init_state = monty_hall_first_part.normalProductOnSelfAsCircuit1(tensored_i_with_hc__i_ry_gate_monty)
