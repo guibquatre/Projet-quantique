@@ -2,6 +2,8 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 import matplotlib.pyplot as plt 
 from qiskit.visualization import plot_histogram
 from qiskit import Aer, execute
+import sys
+from functools import wraps
 
 def build_ghz_circuit(number_of_qubits):
     qreg = QuantumRegister(number_of_qubits, "q")
@@ -13,22 +15,39 @@ def build_ghz_circuit(number_of_qubits):
     
     return circuit
 
-# Algorithme de Deustch
-# L’algorithme de Deustch ne fait intervenir que deux qubits. Son implémentation devrait être assez
-# simple.
-# — Construire les circuits quantiques pour les quatre oracles basés sur les quatre types de fonction.
-# — Programmer une fonction qui prend en entrée un nombre de 0 à 3 et qui retourne l’oracle correspon-
-# dant sous la forme d’une porte quantique.
-# — Construire le circuit quantique pour l’algorithme de Deustch à partir de la porte quantique obtenue
-# à l’étape précédente.
-# — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
-def circuitPourLesQuatresOracles():
+
+
+# S'assurer que l'argument est entre 0 et 3
+def number_between_0_and_3_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not isinstance(args[1], int) or args[1] < 0 or args[1] > 3:
+            print("utilisez un nombre en 0 et 3 pour circuitPourLesQuatresOraclesDeDeustch()")
+            sys.exit(1)
+        return f(*args, **kwargs)
+    return decorated
+
+# — Programmer une fonction qui prend en entrée un nombre de 0 à 3 et qui retourne l’oracle correspondant sous la forme d’une porte quantique.
+@number_between_0_and_3_required
+def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
     number_of_qubits = 2
+    oracle0_circuit = QuantumCircuit(number_of_qubits)
+    oracle0_circuit.x(1) # ready
     oracle1_circuit = QuantumCircuit(number_of_qubits)
-    oracle2_circuit = QuantumCircuit(number_of_qubits)
+    oracle2_circuit = QuantumCircuit(number_of_qubits) # ready
     oracle3_circuit = QuantumCircuit(number_of_qubits)
-    oracle4_circuit = QuantumCircuit(number_of_qubits)
-    
+    # Construire les circuits quantiques pour les quatre oracles basés sur les quatre types de fonction.
+ 
+    oracle1_circuit.x(0)
+    oracle1_circuit.x(1) # ready
+    oracle3_circuit.x(0)
+    oracle3_circuit.x(1)
+
+
+    # — Construire le circuit quantique pour l’algorithme de Deustch à partir de la porte quantique obtenue
+    # à l’étape précédente.
+    # — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
+
 
     # ghz_gate_circuit.h(0)
     # for q in range(1,number_of_qubits):
@@ -55,6 +74,7 @@ def circuitPourLesQuatresOracles():
 
 if __name__== "__main__":
     None
+
 #-------------------------------------------------------------------------------------------------
    
     # qreg = QuantumRegister(4, "q")
@@ -121,6 +141,7 @@ if __name__== "__main__":
     #     ghz_gate_circuit.cx(0,q)
 
     # ghz_gate = ghz_gate_circuit.to_gate(label = "ghz 4")
+    # print(ghz_gate.type())
 
     # circuit = QuantumCircuit(number_of_qubits)
     # circuit.x([1,2])
