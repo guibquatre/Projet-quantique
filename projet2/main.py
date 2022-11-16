@@ -36,20 +36,23 @@ from functools import wraps
     
 #     return circuit
 
-# S'assurer que l'argument est entre 0 et 3
+# S'assurer que l'argument d'une fonction est entre 0 et 3
 def number_between_0_and_3_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not isinstance(args[1], int) or args[1] < 0 or args[1] > 3:
-            print("utilisez un nombre en 0 et 3 pour circuitPourLesQuatresOraclesDeDeustch()")
+        if not isinstance(args[0], int) or args[0] < 0 or args[0] > 3:
+            print("utilisez un nombre en 0 et 3,")
+            print(f)
             sys.exit(1)
         return f(*args, **kwargs)
     return decorated
 
-# — Programmer une fonction qui prend en entrée un nombre de 0 à 3 et qui retourne l’oracle correspondant sous la forme d’une porte quantique.
+# — Programmer une fonction qui prend en entrée un nombre de 0 à 3 et qui retourne l’oracle 
+#   correspondant sous la forme d’une porte quantique.
 @number_between_0_and_3_required
 def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
     number_of_qubits = 2
+    gateToReturn = None
     # Construire les circuits quantiques pour les quatre oracles basés sur les quatre types de fonction.
     #           x       qubit0 qubit1
     # f0                0      0
@@ -66,7 +69,7 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
         deustch0 = QuantumCircuit(number_of_qubits)
         deustch0.i(0) # Ne rien faire en faisant quelque chose
         deustch0.i(0) # Ne rien faire en faisant quelque chose
-        deustch0.to_gate(label = "oracle0")
+        gateToReturn = deustch0.to_gate(label = "oracle0")
 
 #   f1 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 0⟩ |0⟩ = |0⟩ |0⟩
 #   f1 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 1⟩ |1⟩ = |1⟩ |1⟩
@@ -76,7 +79,7 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
     elif oracleNumber == 1:
         deustch1 = QuantumCircuit(number_of_qubits)
         deustch1.cx(0,1)
-        deustch1.to_gate(label = "oracle1")
+        gateToReturn = deustch1.to_gate(label = "oracle1")
 
 #   f2 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 1⟩ |0⟩ = |1⟩ |0⟩
 #   f2 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 0⟩ |1⟩ = |0⟩ |1⟩
@@ -88,7 +91,7 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
         deustch2.x(0)
         deustch2.cx(0,1)
         deustch2.x(0)
-        deustch2.to_gate(label = "oracle2")
+        gateToReturn = deustch2.to_gate(label = "oracle2")
 
 #   f3 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 1⟩ |0⟩ = |1⟩ |0⟩
 #   f3 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 1⟩ |1⟩ = |1⟩ |1⟩
@@ -98,17 +101,18 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
     elif oracleNumber == 3:
         deustch3 = QuantumCircuit(number_of_qubits)
         deustch3.x(1)
-        deustch3.to_gate(label = "oracle3")
-
+        gateToReturn = deustch3.to_gate(label = "oracle3")
+    
     else:
         print("problème avec le décorateur number_between_0_and_3_required")
         sys.exit()
 
-
-
-
+    return gateToReturn
+    
+    
     # — Construire le circuit quantique pour l’algorithme de Deustch à partir de la porte quantique obtenue
     # à l’étape précédente.
+
     # — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
 
 
@@ -136,7 +140,7 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
 
 
 if __name__== "__main__":
-    None
+    circuitPourLesQuatresOraclesDeDeustch(2)
 
 #-------------------------------------------------------------------------------------------------
    
