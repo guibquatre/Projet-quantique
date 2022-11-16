@@ -73,7 +73,7 @@ def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
     
     if oracleNumber == 0:
         deustchOracle.i(0) # Ne rien faire en faisant quelque chose
-        deustchOracle.i(0) 
+        deustchOracle.i(1) 
         gateToReturn = deustchOracle.to_gate(label = "oracle0")
 
 #   f1 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 0⟩ |0⟩ = |0⟩ |0⟩
@@ -105,7 +105,6 @@ def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
     elif oracleNumber == 3:
         deustchOracle.x(1)
         gateToReturn = deustchOracle.to_gate(label = "oracle3")
-    
     else:
         print("problème avec le décorateur number_between_0_and_3_required")
         sys.exit()
@@ -123,7 +122,7 @@ def DeustchAlgo(oracleGate):
     deustchCircuit.x(1)
     deustchCircuit.h(1)
     deustchCircuit.h(0)
-    deustchCircuit.append(oracleGate, [0,1])
+    deustchCircuit.append(oracleGate, [1,0]) # inverser l'oracle?
     deustchCircuit.h(0)
     return deustchCircuit
 
@@ -139,8 +138,8 @@ if __name__== "__main__":
     qreg = QuantumRegister(2, "q")
     creg = ClassicalRegister(1, "c")
     deustch = QuantumCircuit(qreg, creg)
-    deustch.append(DeustchAlgo(choisirOracleDeDeustch(0)), [0,1])
-    deustch.measure(1, 0)
+    deustch.append(DeustchAlgo(choisirOracleDeDeustch(3)), [0,1])
+    deustch.measure(0, 0)
 
     qasm_simulator = Aer.get_backend("qasm_simulator")
     job = execute(deustch, qasm_simulator, shots = 1000)
