@@ -2,6 +2,10 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 import matplotlib.pyplot as plt 
 from qiskit.visualization import plot_histogram
 from qiskit import Aer, execute
+from qiskit.tools.visualization import plot_bloch_multivector
+# plot_bloch_multivector(statevec)
+    # statevec = result.get_statevector()
+
 # from qiskit import IBMQ
 # from qiskit.provider.ibmq import least_busy
 # token = "..."
@@ -50,9 +54,11 @@ def number_between_0_and_3_required(f):
 # — Programmer une fonction qui prend en entrée un nombre de 0 à 3 et qui retourne l’oracle 
 #   correspondant sous la forme d’une porte quantique.
 @number_between_0_and_3_required
-def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
+def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
     number_of_qubits = 2
     gateToReturn = None
+    deustchOracle = QuantumCircuit(number_of_qubits)
+
     # Construire les circuits quantiques pour les quatre oracles basés sur les quatre types de fonction.
     #           x       qubit0 qubit1
     # f0                0      0
@@ -66,10 +72,9 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
 #   f0 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 0⟩ |1⟩ = |1⟩ |1⟩ 
     
     if oracleNumber == 0:
-        deustch0 = QuantumCircuit(number_of_qubits)
-        deustch0.i(0) # Ne rien faire en faisant quelque chose
-        deustch0.i(0) # Ne rien faire en faisant quelque chose
-        gateToReturn = deustch0.to_gate(label = "oracle0")
+        deustchOracle.i(0) # Ne rien faire en faisant quelque chose
+        deustchOracle.i(0) 
+        gateToReturn = deustchOracle.to_gate(label = "oracle0")
 
 #   f1 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 0⟩ |0⟩ = |0⟩ |0⟩
 #   f1 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 1⟩ |1⟩ = |1⟩ |1⟩
@@ -77,9 +82,9 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
 #   f1 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 1⟩ |1⟩ = |0⟩ |1⟩
     
     elif oracleNumber == 1:
-        deustch1 = QuantumCircuit(number_of_qubits)
-        deustch1.cx(0,1)
-        gateToReturn = deustch1.to_gate(label = "oracle1")
+        deustchOracle = QuantumCircuit(number_of_qubits)
+        deustchOracle.cx(0,1)
+        gateToReturn = deustchOracle.to_gate(label = "oracle1")
 
 #   f2 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 1⟩ |0⟩ = |1⟩ |0⟩
 #   f2 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 0⟩ |1⟩ = |0⟩ |1⟩
@@ -87,11 +92,10 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
 #   f2 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 0⟩ |1⟩ = |1⟩ |1⟩ 
 
     elif oracleNumber == 2:
-        deustch2 = QuantumCircuit(number_of_qubits)
-        deustch2.x(0)
-        deustch2.cx(0,1)
-        deustch2.x(0)
-        gateToReturn = deustch2.to_gate(label = "oracle2")
+        deustchOracle.x(0)
+        deustchOracle.cx(0,1)
+        deustchOracle.x(0)
+        gateToReturn = deustchOracle.to_gate(label = "oracle2")
 
 #   f3 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 1⟩ |0⟩ = |1⟩ |0⟩
 #   f3 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 1⟩ |1⟩ = |1⟩ |1⟩
@@ -99,9 +103,8 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
 #   f3 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 1⟩ |1⟩ = |0⟩ |1⟩
 
     elif oracleNumber == 3:
-        deustch3 = QuantumCircuit(number_of_qubits)
-        deustch3.x(1)
-        gateToReturn = deustch3.to_gate(label = "oracle3")
+        deustchOracle.x(1)
+        gateToReturn = deustchOracle.to_gate(label = "oracle3")
     
     else:
         print("problème avec le décorateur number_between_0_and_3_required")
@@ -112,35 +115,41 @@ def circuitPourLesQuatresOraclesDeDeustch(oracleNumber: int): # -> QuantumCircui
     
     # — Construire le circuit quantique pour l’algorithme de Deustch à partir de la porte quantique obtenue
     # à l’étape précédente.
+# Une porte quantique à deux qubits, (un oracle) est attendue comme argument 
+# Le circuit quantique de deustch est attendu comme retour
+def DeustchAlgo(oracleGate):
+    number_of_qubits = 2
+    deustchCircuit = QuantumCircuit(number_of_qubits)
+    deustchCircuit.x(1)
+    deustchCircuit.h(1)
+    deustchCircuit.h(0)
+    deustchCircuit.append(oracleGate, [0,1])
+    deustchCircuit.h(0)
+    return deustchCircuit
+
+
+
+
 
     # — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
 
-
-    # ghz_gate_circuit.h(0)
-    # for q in range(1,number_of_qubits):
-    #     ghz_gate_circuit.cx(0,q)
-
-    # ghz_gate = ghz_gate_circuit.to_gate(label = "ghz 4")
-
-    # circuit = QuantumCircuit(number_of_qubits)
-    # circuit.x([1,2])
-    # circuit.append(ghz_gate,[0,1,2,3])
-    # circuit.measure_all()
-    # circuit.draw("mpl")
-    # # plt.show()
-
-    # qasm_simulator = Aer.get_backend("qasm_simulator")
-    # # D'autres argument sont optionnels
-    # job = execute(circuit, qasm_simulator, shots = 1000)
-    # counts = job.result().get_counts()
-    # print(counts)
-
-    # plot_histogram(counts)
-    # plt.show()
-
+    
 
 if __name__== "__main__":
-    circuitPourLesQuatresOraclesDeDeustch(2)
+    qreg = QuantumRegister(2, "q")
+    creg = ClassicalRegister(1, "c")
+    deustch = QuantumCircuit(qreg, creg)
+    deustch.append(DeustchAlgo(choisirOracleDeDeustch(0)), [0,1])
+    deustch.measure(1, 0)
+
+    qasm_simulator = Aer.get_backend("qasm_simulator")
+    job = execute(deustch, qasm_simulator, shots = 1000)
+    counts = job.result().get_counts()
+    print(counts)
+
+    plot_histogram(counts)
+    plt.show()
+    print(deustch.decompose())
 
 #-------------------------------------------------------------------------------------------------
    
@@ -208,7 +217,6 @@ if __name__== "__main__":
     #     ghz_gate_circuit.cx(0,q)
 
     # ghz_gate = ghz_gate_circuit.to_gate(label = "ghz 4")
-    # print(ghz_gate.type())
 
     # circuit = QuantumCircuit(number_of_qubits)
     # circuit.x([1,2])
