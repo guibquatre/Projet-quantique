@@ -104,7 +104,7 @@ def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
 
     elif oracleNumber == 3:
         deustchOracle.x(1)
-        gateToReturn = deustchOracle.to_gate(label = "oracle3")
+        gateToReturn = deustchOracle.to_instruction(label = "oracle3")
     else:
         print("problème avec le décorateur number_between_0_and_3_required")
         sys.exit()
@@ -122,7 +122,7 @@ def DeustchAlgo(oracleGate):
     deustchCircuit.x(1)
     deustchCircuit.h(1)
     deustchCircuit.h(0)
-    deustchCircuit.append(oracleGate, [1,0]) # inverser l'oracle?
+    deustchCircuit.append(oracleGate, [0,1]) # inverser l'oracle?
     deustchCircuit.h(0)
     return deustchCircuit
 
@@ -135,20 +135,24 @@ def DeustchAlgo(oracleGate):
     
 
 if __name__== "__main__":
-    qreg = QuantumRegister(2, "q")
-    creg = ClassicalRegister(1, "c")
-    deustch = QuantumCircuit(qreg, creg)
-    deustch.append(DeustchAlgo(choisirOracleDeDeustch(3)), [0,1])
-    deustch.measure(0, 0)
+    indexOracles = 0
+    # Deustch Start ----------------------------------------------
+    while indexOracles < 4:
+        qreg = QuantumRegister(2, "q")
+        creg = ClassicalRegister(1, "c")
+        deustch = QuantumCircuit(qreg, creg)
+        deustch.append(DeustchAlgo(choisirOracleDeDeustch(indexOracles)), [0,1])
+        deustch.measure(0, 0)
+        qasm_simulator = Aer.get_backend("qasm_simulator")
+        jobDeustch = execute(deustch, qasm_simulator, shots = 1000)
+        countsDeustch = jobDeustch.result().get_counts()
+        plot_histogram(countsDeustch, title="Oracle"+str(indexOracles))
+        print(deustch.decompose())
+        print(countsDeustch)
+        plt.show()
+        indexOracles += 1
+    # Deustch End -------------------------------------------------
 
-    qasm_simulator = Aer.get_backend("qasm_simulator")
-    job = execute(deustch, qasm_simulator, shots = 1000)
-    counts = job.result().get_counts()
-    print(counts)
-
-    plot_histogram(counts)
-    plt.show()
-    print(deustch.decompose())
 
 #-------------------------------------------------------------------------------------------------
    
@@ -227,10 +231,10 @@ if __name__== "__main__":
     # qasm_simulator = Aer.get_backend("qasm_simulator")
     # # D'autres argument sont optionnels
     # job = execute(circuit, qasm_simulator, shots = 1000)
-    # counts = job.result().get_counts()
-    # print(counts)
+    # countsDeustch = job.result().get_counts()
+    # print(countsDeustch)
 
-    # plot_histogram(counts)
+    # plot_histogram(countsDeustch)
     # plt.show()
 
 #--------------------------------------------------------------------------------------------
