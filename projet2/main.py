@@ -169,23 +169,21 @@ def DeustchAlgo(oracleGate):
 
 @number_between_1_and_0_required
 def deustch_Jozsa_Oracle_const_useCase(_oracleNumber :int, _indexQubits: int, # -> deustch_Jozsa_Oracle_door
-                                        _last_Qubit_To_Loop: int, _go_to_real_last_qubit: int): 
+                                        _last_Qubit_To_Loop: int, _go_to_real_last_qubit: int,
+                                        deustch_Jozsa_Oracle_circuit: QuantumCircuit): 
+    while _indexQubits < _last_Qubit_To_Loop:
+        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
     if _oracleNumber == 0:
-        while _indexQubits < _last_Qubit_To_Loop:
-            deustch_Jozsa_Oracle.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
-        deustch_Jozsa_Oracle.i(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Idem
-        return deustch_Jozsa_Oracle.to_gate(label = "oracle0")
+        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Idem
     elif _oracleNumber == 1:
-        while _indexQubits < _last_Qubit_To_Loop:
-            deustch_Jozsa_Oracle.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
-        deustch_Jozsa_Oracle.x(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Inverser dernière porte
-        return deustch_Jozsa_Oracle.to_gate(label = "oracle1")
+        deustch_Jozsa_Oracle_circuit.x(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Inverser dernière porte
+    return deustch_Jozsa_Oracle_circuit.to_gate(label = "oracle1")
             
 @number_between_0_and_3_required
 @number_over_0_is_required
 def deustch_Jozsa_Oracle(oracleNumber: int, number_of_qubits: int): # -> deustch_Jozsa_Oracle_door
     gate_To_Return = None 
-    deustch_Jozsa_Oracle = QuantumCircuit(number_of_qubits)
+    deustch_Jozsa_Oracle_circuit = QuantumCircuit(number_of_qubits)
     indexQubits = 0
     firstQubit = 0
     operand_substract_to_just_one_before_last_index = 2
@@ -196,10 +194,15 @@ def deustch_Jozsa_Oracle(oracleNumber: int, number_of_qubits: int): # -> deustch
 # (il y en a 2). Votre réponse devrait pouvoir s’appliquer à un nombre arbitraire de qubits. 
     if oracleNumber == 0 or oracleNumber == 1: # f = 0, constante
         gate_To_Return = deustch_Jozsa_Oracle_const_useCase(oracleNumber, indexQubits, 
-                                                            last_Qubit_To_Loop, go_to_real_last_qubit)
+                                                            last_Qubit_To_Loop, go_to_real_last_qubit,
+                                                            deustch_Jozsa_Oracle_circuit)
 # — Trouver au moins deux circuits quantiques pour les oracles qui implémentent des fonctions balancées.
 # Votre réponse devrait pouvoir s’appliquer à un nombre arbitraire de qubits.
     elif oracleNumber == 2: # f est balancée
+        None
+    elif oracleNumber == 3: # f est balancée
+        None
+    return gate_To_Return
 
 
 
