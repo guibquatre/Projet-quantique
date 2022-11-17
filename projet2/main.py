@@ -1,10 +1,11 @@
 from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 from qiskit.visualization import plot_histogram
 from qiskit import Aer, execute
-from qiskit.tools.visualization import plot_bloch_multivector
+import random
+# from qiskit.tools.visualization import plot_bloch_multivector
 # plot_bloch_multivector(statevec)
-    # statevec = result.get_statevector()
+# statevec = result.get_statevector()
 
 # from qiskit import IBMQ
 # from qiskit.provider.ibmq import least_busy
@@ -34,12 +35,29 @@ from functools import wraps
 #     qreg = QuantumRegister(number_of_qubits, "q")
 #     circuit = QuantumCircuit(qreg)
 #     circuit.h(qreg[0])
-    
+
 #     for q in range(1,number_of_qubits):
 #         circuit.cx(qreg[0],qreg[q])
-    
+
 #     return circuit
 
+
+class VariablesStructure:
+    gate_To_Return = None
+    deustch_Jozsa_Oracle_circuit = None
+    last_Qubit_To_Loop = None
+    indexQubits = 0
+    firstQubit = 0
+    go_to_just_one_before_last_Qubit = 2
+    go_to_real_last_qubit = 1
+
+    def __init__(self, number_of_qubits):
+        self.deustch_Jozsa_Oracle_circuit = QuantumCircuit(number_of_qubits)
+        self.last_Qubit_To_Loop = number_of_qubits - \
+            self.go_to_just_one_before_last_Qubit
+
+
+# START DECORATORS ------------------------------------------------------------------------------------
 def number_between_0_and_3_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -49,6 +67,7 @@ def number_between_0_and_3_required(f):
             sys.exit(1)
         return f(*args, **kwargs)
     return decorated
+
 
 def number_over_0_is_required(f):
     @wraps(f)
@@ -60,6 +79,7 @@ def number_over_0_is_required(f):
         return f(*args, **kwargs)
     return decorated
 
+
 def number_between_1_and_0_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -69,11 +89,12 @@ def number_between_1_and_0_required(f):
             sys.exit(1)
         return f(*args, **kwargs)
     return decorated
+# END DECORATORS -----------------------------------------------------------------------------------------
 
-# — Programmer une fonction qui prend en entrée un nombre de 0 à 3 et qui retourne l’oracle 
-#   correspondant sous la forme d’une porte quantique.
+
+# START DEUSTCH ------------------------------------------------------------------------------------------
 @number_between_0_and_3_required
-def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
+def choisirOracleDeDeustch(oracleNumber: int):  # -> QuantumCircuit Gate
     number_of_qubits = 2
     gateToReturn = None
     deustchOracle = QuantumCircuit(number_of_qubits)
@@ -88,33 +109,33 @@ def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
 #   f0 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 0⟩ |0⟩ = |0⟩ |0⟩
 #   f0 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 0⟩ |1⟩ = |0⟩ |1⟩
 #   f0 |1⟩ |0⟩ = |1 ⊕ f (0)⟩ |0⟩ = |1 ⊕ 0⟩ |0⟩ = |1⟩ |0⟩
-#   f0 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 0⟩ |1⟩ = |1⟩ |1⟩ 
-    
+#   f0 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 0⟩ |1⟩ = |1⟩ |1⟩
+
     if oracleNumber == 0:
-        deustchOracle.i(0) # Ne rien faire en faisant quelque chose
-        deustchOracle.i(1) 
-        gateToReturn = deustchOracle.to_gate(label = "oracle0")
+        deustchOracle.i(0)  # Ne rien faire en faisant quelque chose
+        deustchOracle.i(1)
+        gateToReturn = deustchOracle.to_gate(label="oracle0")
 
 #   f1 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 0⟩ |0⟩ = |0⟩ |0⟩
 #   f1 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 1⟩ |1⟩ = |1⟩ |1⟩
 #   f1 |1⟩ |0⟩ = |1 ⊕ f (0)⟩ |0⟩ = |1 ⊕ 0⟩ |0⟩ = |1⟩ |0⟩
 #   f1 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 1⟩ |1⟩ = |0⟩ |1⟩
-    
+
     elif oracleNumber == 1:
         deustchOracle = QuantumCircuit(number_of_qubits)
-        deustchOracle.cx(0,1)
-        gateToReturn = deustchOracle.to_gate(label = "oracle1")
+        deustchOracle.cx(0, 1)
+        gateToReturn = deustchOracle.to_gate(label="oracle1")
 
 #   f2 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 1⟩ |0⟩ = |1⟩ |0⟩
 #   f2 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 0⟩ |1⟩ = |0⟩ |1⟩
 #   f2 |1⟩ |0⟩ = |1 ⊕ f (0)⟩ |0⟩ = |1 ⊕ 1⟩ |0⟩ = |0⟩ |0⟩
-#   f2 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 0⟩ |1⟩ = |1⟩ |1⟩ 
+#   f2 |1⟩ |1⟩ = |1 ⊕ f (1)⟩ |1⟩ = |1 ⊕ 0⟩ |1⟩ = |1⟩ |1⟩
 
     elif oracleNumber == 2:
         deustchOracle.x(0)
-        deustchOracle.cx(0,1)
+        deustchOracle.cx(0, 1)
         deustchOracle.x(0)
-        gateToReturn = deustchOracle.to_gate(label = "oracle2")
+        gateToReturn = deustchOracle.to_gate(label="oracle2")
 
 #   f3 |0⟩ |0⟩ = |0 ⊕ f (0)⟩ |0⟩ = |0 ⊕ 1⟩ |0⟩ = |1⟩ |0⟩
 #   f3 |0⟩ |1⟩ = |0 ⊕ f (1)⟩ |1⟩ = |0 ⊕ 1⟩ |1⟩ = |1⟩ |1⟩
@@ -123,144 +144,155 @@ def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
 
     elif oracleNumber == 3:
         deustchOracle.x(1)
-        gateToReturn = deustchOracle.to_gate(label = "oracle3")
+        gateToReturn = deustchOracle.to_gate(label="oracle3")
     else:
         print("problème avec le décorateur number_between_0_and_3_required")
         sys.exit()
 
     return gateToReturn
-    
-    
-    # — Construire le circuit quantique pour l’algorithme de Deustch à partir de la porte quantique obtenue
-    # à l’étape précédente.
-# Une porte quantique à deux qubits, (un oracle) est attendue comme argument 
+
+
+# Une porte quantique à deux qubits, (un oracle) est attendue comme argument
 # Le circuit quantique de deustch est attendu comme retour
-def DeustchAlgo(oracleGate):
+def DeustchAlgo(oracleGate: QuantumCircuit):
     number_of_qubits = 2
     deustchCircuit = QuantumCircuit(number_of_qubits)
     deustchCircuit.x(1)
     deustchCircuit.h(1)
     deustchCircuit.h(0)
-    deustchCircuit.append(oracleGate, [0,1]) # inverser l'oracle?
+    deustchCircuit.append(oracleGate, [0, 1])
     deustchCircuit.h(0)
     return deustchCircuit
-    # — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
+#      ┌───┐     ┌──────────┐┌───┐┌─┐
+# q_0: ┤ H ├─────┤0         ├┤ H ├┤M├
+#      ├───┤┌───┐│  oracle  │└───┘└╥┘
+# q_1: ┤ X ├┤ H ├┤1         ├──────╫─
+#      └───┘└───┘└──────────┘      ║
+#   c: ════════════════════════════╩═
+# END DEUSTCH ---------------------------------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# START DEUSTCH-JOZSA -----------------------------------------------------------------------------------------
 @number_between_1_and_0_required
-def deustch_Jozsa_Oracle_const_useCase(_oracleNumber :int, _indexQubits: int, # -> deustch_Jozsa_Oracle_door
-                                        _last_Qubit_To_Loop: int, _go_to_real_last_qubit: int,
-                                        deustch_Jozsa_Oracle_circuit: QuantumCircuit): 
+def deustch_Jozsa_Oracle_const_useCase(_oracleNumber: int, _indexQubits: int,  # -> deustch_Jozsa_Oracle_door
+                                       _last_Qubit_To_Loop: int, _go_to_real_last_qubit: int,
+                                       deustch_Jozsa_Oracle_circuit: QuantumCircuit):
     while _indexQubits < _last_Qubit_To_Loop:
-        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
-    if _oracleNumber == 0: # f = 0, constante
-        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop + _go_to_real_last_qubit)
-    elif _oracleNumber == 1: # f = 1, constante
-        deustch_Jozsa_Oracle_circuit.x(_last_Qubit_To_Loop + _go_to_real_last_qubit)
-    return deustch_Jozsa_Oracle_circuit.to_gate(label = "oracle1")
-            
+        # ne rien faire en faisant quelque chose
+        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop)
+        _indexQubits += 1
+    if _oracleNumber == 0:  # f = 0, constante
+        deustch_Jozsa_Oracle_circuit.i(
+            _last_Qubit_To_Loop + _go_to_real_last_qubit)
+    elif _oracleNumber == 1:  # f = 1, constante
+        deustch_Jozsa_Oracle_circuit.x(
+            _last_Qubit_To_Loop + _go_to_real_last_qubit)
+    return deustch_Jozsa_Oracle_circuit.to_gate(label="oracle1")
+
+
+# Retournent ces oracles sous la forme de portes quantiques à n qubits.
 @number_between_0_and_3_required
 @number_over_0_is_required
-def deustch_Jozsa_Oracle(oracleNumber: int, number_of_qubits: int): # -> deustch_Jozsa_Oracle_door
-    gate_To_Return = None 
-    deustch_Jozsa_Oracle_circuit = QuantumCircuit(number_of_qubits)
-    indexQubits = 0
-    firstQubit = 0
-    operand_substract_to_just_one_before_last_index = 2
-    go_to_real_last_qubit = 1
-    last_Qubit_To_Loop = number_of_qubits - operand_substract_to_just_one_before_last_index
-
-# — Trouver la forme des circuits quantiques pour les oracles qui implémentent des fonctions constantes
-# (il y en a 2). Votre réponse devrait pouvoir s’appliquer à un nombre arbitraire de qubits. 
-    if oracleNumber == 0 or oracleNumber == 1: # f = 0, constante
-        gate_To_Return = deustch_Jozsa_Oracle_const_useCase(oracleNumber, indexQubits, 
-                                                            last_Qubit_To_Loop, go_to_real_last_qubit,
-                                                            deustch_Jozsa_Oracle_circuit)
-# — Trouver au moins deux circuits quantiques pour les oracles qui implémentent des fonctions balancées.
-# Votre réponse devrait pouvoir s’appliquer à un nombre arbitraire de qubits.
+# -> deustch_Jozsa_Oracle_door
+def deustch_Jozsa_Oracle(oracleNumber: int, _number_of_qubits: int):
+    variables = VariablesStructure(_number_of_qubits)
+# Circuits quantiques pour les oracles qui implémentent des fonctions constantes
+    if oracleNumber == 0 or oracleNumber == 1:
+        variables.gate_To_Return = deustch_Jozsa_Oracle_const_useCase(oracleNumber, indexQubits,
+                                                                      variables.last_Qubit_To_Loop, variables.go_to_real_last_qubit,
+                                                                      variables.deustch_Jozsa_Oracle_circuit)
+# Oracles qui implémentent des fonctions balancées.
     elif oracleNumber == 2 or oracleNumber == 3:
-        indexQubits = 1
-        while indexQubits < last_Qubit_To_Loop:
-            deustch_Jozsa_Oracle_circuit.i(last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
+        variables.indexQubits = 1
+        while variables.indexQubits < variables.last_Qubit_To_Loop:
+            # ne rien faire en faisant quelque chose
+            variables.deustch_Jozsa_Oracle_circuit.i(
+                variables.last_Qubit_To_Loop)
+            variables.indexQubits += 1
         if oracleNumber == 2:  # f est balancée, version originale
-            deustch_Jozsa_Oracle_circuit.cx(firstQubit, number_of_qubits - go_to_real_last_qubit)
-        elif oracleNumber == 3: # f est balancée, version not
-            deustch_Jozsa_Oracle_circuit.x(firstQubit)
-            deustch_Jozsa_Oracle_circuit.cx(firstQubit, number_of_qubits - go_to_real_last_qubit)
-            deustch_Jozsa_Oracle_circuit.x(firstQubit)
-    
-    return gate_To_Return
+            variables.deustch_Jozsa_Oracle_circuit.cx(
+                variables.firstQubit, _number_of_qubits - variables.go_to_real_last_qubit)
+            variables.gate_To_Return = variables.deustch_Jozsa_Oracle_circuit.to_gate(
+                label="oracle2")
+        elif oracleNumber == 3:  # f est balancée, version not
+            variables.deustch_Jozsa_Oracle_circuit.x(variables.firstQubit)
+            variables.deustch_Jozsa_Oracle_circuit.cx(
+                variables.firstQubit, _number_of_qubits - variables.go_to_real_last_qubit)
+            variables.deustch_Jozsa_Oracle_circuit.x(variables.firstQubit)
+            variables.gate_To_Return = variables.deustch_Jozsa_Oracle_circuit.to_gate(
+                label="oracle3")
+
+    return variables.gate_To_Return
 
 
-
-
-
-
-
-
-
-
-# — Programmer des fonctions qui prenne en entrée un nombre de qubits retournent ces oracles sous la
-# forme de portes quantiques à n qubits.
 # — Programmer une fonction qui construit le circuit quantique pour l’algorithme de Deustch-Jozsa à
 # partir d’une porte quantique obtenue à l’étape précédente.
+# Une porte quantique à n qubits, (un oracle) est attendue comme argument
+# Le circuit quantique de deustch-jozsa est attendu comme retour
+def deustchJozsaAlgo(oracleGate: QuantumCircuit, number_of_qubits: int):
+    variables = VariablesStructure(number_of_qubits)
+    while variables.indexQubits < variables.last_Qubit_To_Loop:
+        variables.deustch_Jozsa_Oracle_circuit.h(variables.indexQubits)
+        variables.indexQubits += 1
+    variables.deustch_Jozsa_Oracle_circuit.x(
+        number_of_qubits - variables.go_to_real_last_qubit)
+    variables.deustch_Jozsa_Oracle_circuit.h(
+        number_of_qubits - variables.go_to_real_last_qubit)
+    variables.deustch_Jozsa_Oracle_circuit.append(
+        oracleGate, [0, number_of_qubits - variables.go_to_real_last_qubit])
+    variables.indexQubits = 0
+    while variables.indexQubits < variables.last_Qubit_To_Loop:
+        variables.deustch_Jozsa_Oracle_circuit.h(variables.indexQubits)
+        variables.indexQubits += 1
+    return variables.deustch_Jozsa_Oracle_circuit.to_gate(label="deustch-jozsa-circuit")
+    # — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
 # — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
+# END DEUSTCH-JOZSA -----------------------------------------------------------------------------------------
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-if __name__== "__main__":e indexQubits < last_Qubit = 0
+if __name__ == "__main__":
+    indexOracles = 0
     # Deustch Start ----------------------------------------------
-    while indexQubits < last_Qubit < 4:
-        qreg = QuantumRegister(2, "q")
+    while indexOracles < 4:
+        qreg = QuantumRegister(2, "quest1")
         creg = ClassicalRegister(1, "c")
         deustch = QuantumCircuit(qreg, creg)
-        deustch.append(DeustchAlgo(choisirOracleDeDeustce indexQubits < last_Qubit)), [0,1])
+        deustch.append(DeustchAlgo(
+            choisirOracleDeDeustch(indexOracles)), [0, 1])
         deustch.measure(0, 0)
         qasm_simulator = Aer.get_backend("qasm_simulator")
-        jobDeustch = execute(deustch, qasm_simulator, shots = 1000)
+        jobDeustch = execute(deustch, qasm_simulator, shots=1000)
         countsDeustch = jobDeustch.result().get_counts()
-        plot_histogram(countsDeustch, title="Oracle"+ste indexQubits < last_Qubit))
-        print(deustch.decompose())
-        print(countsDeustch)
+        plot_histogram(
+            countsDeustch, title="Deustch_Oracle_Result"+str(indexOracles))
+        # print(deustch.decompose())
+        # print(countsDeustch)
         plt.show()
-e indexQubits < last_Qubit += 1
+        indexOracles += 1
     # Deustch End -------------------------------------------------
+        indexOracles = 0
+    # Deustch-Jozsa Start ----------------------------------------------
+    while indexOracles < 4:
+        randomNumber = random.randint(2, 2**5)
+        qreg = QuantumRegister(randomNumber, "quantumReg1")
+        creg = ClassicalRegister(1, "classicReg1")
+        deustch_jozsa = QuantumCircuit(qreg, creg)
+        deustch_jozsa.append(deustchJozsaAlgo(
+        choisirOracleDeDeustch(indexOracles)), [0, randomNumber - 1])
+        deustch.measure(0, 0)
+        qasm_simulator = Aer.get_backend("qasm_simulator")
+        jobDeustch = execute(deustch, qasm_simulator, shots=1000)
+        countsDeustch = jobDeustch.result().get_counts()
+        plot_histogram(
+            countsDeustch, title="Deustch_Oracle_Result"+str(indexOracles))
+        # print(deustch.decompose())
+        # print(countsDeustch)
+        plt.show()
+        indexOracles += 1
+    # Deustch-Jozsa End -------------------------------------------------
 
+# -------------------------------------------------------------------------------------------------
 
-#-------------------------------------------------------------------------------------------------
-   
     # qreg = QuantumRegister(4, "q")
     # creg = ClassicalRegister(4, "c")
     # circuit = QuantumCircuit(qreg,creg)
@@ -277,7 +309,7 @@ e indexQubits < last_Qubit += 1
     # circuit.measure(qreg[2],creg[2])
     # circuit.measure(qreg[3],creg[3])
 
-#--------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
 
     # qreg = QuantumRegister(4, "q")
 
@@ -287,10 +319,10 @@ e indexQubits < last_Qubit += 1
     # circuit.cx(qreg[0],qreg[1])
     # circuit.cx(qreg[0],qreg[2])
     # circuit.cx(qreg[0],qreg[3])
-    
+
     # circuit.measure_all()
 
-#------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
 
     # qreg = QuantumRegister(4, "q")
     # circuit = QuantumCircuit(qreg)
@@ -298,11 +330,11 @@ e indexQubits < last_Qubit += 1
     # for q in range(1,4):
     #     circuit.cx(qreg[0],qreg[q])
 
-#------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
 
     # circuit = build_ghz_circuit(4)
 
-#------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
 
     # number_of_qubits = 4
     # circuit = QuantumCircuit(number_of_qubits)
@@ -316,7 +348,7 @@ e indexQubits < last_Qubit += 1
     # fig = circuit.draw(output="mpl")
     # fig.savefig("circuit_ghz_0.pdf")
 
-#------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------
 
     # number_of_qubits = 4
     # ghz_gate_circuit = QuantumCircuit(number_of_qubits)
@@ -342,4 +374,4 @@ e indexQubits < last_Qubit += 1
     # plot_histogram(countsDeustch)
     # plt.show()
 
-#--------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------
