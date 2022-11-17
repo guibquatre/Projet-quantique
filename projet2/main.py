@@ -173,10 +173,10 @@ def deustch_Jozsa_Oracle_const_useCase(_oracleNumber :int, _indexQubits: int, # 
                                         deustch_Jozsa_Oracle_circuit: QuantumCircuit): 
     while _indexQubits < _last_Qubit_To_Loop:
         deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
-    if _oracleNumber == 0:
-        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Idem
-    elif _oracleNumber == 1:
-        deustch_Jozsa_Oracle_circuit.x(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Inverser dernière porte
+    if _oracleNumber == 0: # f = 0, constante
+        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop + _go_to_real_last_qubit)
+    elif _oracleNumber == 1: # f = 1, constante
+        deustch_Jozsa_Oracle_circuit.x(_last_Qubit_To_Loop + _go_to_real_last_qubit)
     return deustch_Jozsa_Oracle_circuit.to_gate(label = "oracle1")
             
 @number_between_0_and_3_required
@@ -198,10 +198,17 @@ def deustch_Jozsa_Oracle(oracleNumber: int, number_of_qubits: int): # -> deustch
                                                             deustch_Jozsa_Oracle_circuit)
 # — Trouver au moins deux circuits quantiques pour les oracles qui implémentent des fonctions balancées.
 # Votre réponse devrait pouvoir s’appliquer à un nombre arbitraire de qubits.
-    elif oracleNumber == 2: # f est balancée
-        None
-    elif oracleNumber == 3: # f est balancée
-        None
+    elif oracleNumber == 2 or oracleNumber == 3:
+        indexQubits = 1
+        while indexQubits < last_Qubit_To_Loop:
+            deustch_Jozsa_Oracle_circuit.i(last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
+        if oracleNumber == 2:  # f est balancée, version originale
+            deustch_Jozsa_Oracle_circuit.cx(firstQubit, number_of_qubits - go_to_real_last_qubit)
+        elif oracleNumber == 3: # f est balancée, version not
+            deustch_Jozsa_Oracle_circuit.x(firstQubit)
+            deustch_Jozsa_Oracle_circuit.cx(firstQubit, number_of_qubits - go_to_real_last_qubit)
+            deustch_Jozsa_Oracle_circuit.x(firstQubit)
+    
     return gate_To_Return
 
 
@@ -210,10 +217,6 @@ def deustch_Jozsa_Oracle(oracleNumber: int, number_of_qubits: int): # -> deustch
 
 
 
-    # deustch_Jozsa_Oracle = QuantumCircuit(number_of_qubits)
-    # last_Qubit = number_of_qubits - 1
-    # deustch_Jozsa_Oracle.cx(0, last_Qubit)
-    # return deustch_Jozsa_Oracle.to_gate("deustch_Jozsa_Oracle_Door")
 
 
 
