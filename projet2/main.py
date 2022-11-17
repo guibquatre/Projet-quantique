@@ -40,12 +40,31 @@ from functools import wraps
     
 #     return circuit
 
-# S'assurer que l'argument d'une fonction est entre 0 et 3
 def number_between_0_and_3_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not isinstance(args[0], int) or args[0] < 0 or args[0] > 3:
-            print("utilisez un nombre en 0 et 3,")
+            print("utilisez un nombre en 0 et 3")
+            print(f)
+            sys.exit(1)
+        return f(*args, **kwargs)
+    return decorated
+
+def number_over_0_is_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not isinstance(args[1], int) or args[1] < 1:
+            print("utilisez un nombre plus haut que zero")
+            print(f)
+            sys.exit(1)
+        return f(*args, **kwargs)
+    return decorated
+
+def number_between_1_and_0_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not isinstance(args[0], int) or (args[0] != 1 and args[0] != 0):
+            print("utilisez 0 ou 1")
             print(f)
             sys.exit(1)
         return f(*args, **kwargs)
@@ -104,7 +123,7 @@ def choisirOracleDeDeustch(oracleNumber: int): # -> QuantumCircuit Gate
 
     elif oracleNumber == 3:
         deustchOracle.x(1)
-        gateToReturn = deustchOracle.to_instruction(label = "oracle3")
+        gateToReturn = deustchOracle.to_gate(label = "oracle3")
     else:
         print("problème avec le décorateur number_between_0_and_3_required")
         sys.exit()
@@ -125,32 +144,112 @@ def DeustchAlgo(oracleGate):
     deustchCircuit.append(oracleGate, [0,1]) # inverser l'oracle?
     deustchCircuit.h(0)
     return deustchCircuit
-
-
-
-
-
     # — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
 
-    
 
-if __name__== "__main__":
-    indexOracles = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@number_between_1_and_0_required
+def deustch_Jozsa_Oracle_const_useCase(_oracleNumber :int, _indexQubits: int, # -> deustch_Jozsa_Oracle_door
+                                        _last_Qubit_To_Loop: int, _go_to_real_last_qubit: int): 
+    if _oracleNumber == 0:
+        while _indexQubits < _last_Qubit_To_Loop:
+            deustch_Jozsa_Oracle.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
+        deustch_Jozsa_Oracle.i(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Idem
+        return deustch_Jozsa_Oracle.to_gate(label = "oracle0")
+    elif _oracleNumber == 1:
+        while _indexQubits < _last_Qubit_To_Loop:
+            deustch_Jozsa_Oracle.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
+        deustch_Jozsa_Oracle.x(_last_Qubit_To_Loop + _go_to_real_last_qubit) # Inverser dernière porte
+        return deustch_Jozsa_Oracle.to_gate(label = "oracle1")
+            
+@number_between_0_and_3_required
+@number_over_0_is_required
+def deustch_Jozsa_Oracle(oracleNumber: int, number_of_qubits: int): # -> deustch_Jozsa_Oracle_door
+    gate_To_Return = None 
+    deustch_Jozsa_Oracle = QuantumCircuit(number_of_qubits)
+    indexQubits = 0
+    firstQubit = 0
+    operand_substract_to_just_one_before_last_index = 2
+    go_to_real_last_qubit = 1
+    last_Qubit_To_Loop = number_of_qubits - operand_substract_to_just_one_before_last_index
+
+# — Trouver la forme des circuits quantiques pour les oracles qui implémentent des fonctions constantes
+# (il y en a 2). Votre réponse devrait pouvoir s’appliquer à un nombre arbitraire de qubits. 
+    if oracleNumber == 0 or oracleNumber == 1: # f = 0, constante
+        gate_To_Return = deustch_Jozsa_Oracle_const_useCase(oracleNumber, indexQubits, 
+                                                            last_Qubit_To_Loop, go_to_real_last_qubit)
+# — Trouver au moins deux circuits quantiques pour les oracles qui implémentent des fonctions balancées.
+# Votre réponse devrait pouvoir s’appliquer à un nombre arbitraire de qubits.
+    elif oracleNumber == 2: # f est balancée
+
+
+
+
+
+
+
+    # deustch_Jozsa_Oracle = QuantumCircuit(number_of_qubits)
+    # last_Qubit = number_of_qubits - 1
+    # deustch_Jozsa_Oracle.cx(0, last_Qubit)
+    # return deustch_Jozsa_Oracle.to_gate("deustch_Jozsa_Oracle_Door")
+
+
+
+# — Programmer des fonctions qui prenne en entrée un nombre de qubits retournent ces oracles sous la
+# forme de portes quantiques à n qubits.
+# — Programmer une fonction qui construit le circuit quantique pour l’algorithme de Deustch-Jozsa à
+# partir d’une porte quantique obtenue à l’étape précédente.
+# — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__== "__main__":e indexQubits < last_Qubit = 0
     # Deustch Start ----------------------------------------------
-    while indexOracles < 4:
+    while indexQubits < last_Qubit < 4:
         qreg = QuantumRegister(2, "q")
         creg = ClassicalRegister(1, "c")
         deustch = QuantumCircuit(qreg, creg)
-        deustch.append(DeustchAlgo(choisirOracleDeDeustch(indexOracles)), [0,1])
+        deustch.append(DeustchAlgo(choisirOracleDeDeustce indexQubits < last_Qubit)), [0,1])
         deustch.measure(0, 0)
         qasm_simulator = Aer.get_backend("qasm_simulator")
         jobDeustch = execute(deustch, qasm_simulator, shots = 1000)
         countsDeustch = jobDeustch.result().get_counts()
-        plot_histogram(countsDeustch, title="Oracle"+str(indexOracles))
+        plot_histogram(countsDeustch, title="Oracle"+ste indexQubits < last_Qubit))
         print(deustch.decompose())
         print(countsDeustch)
         plt.show()
-        indexOracles += 1
+e indexQubits < last_Qubit += 1
     # Deustch End -------------------------------------------------
 
 
