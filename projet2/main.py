@@ -301,22 +301,24 @@ def deustchJozsaAlgo(oracleGate: QuantumCircuit, number_of_qubits: int): # -> Qu
 def choisirOracleBernstein_Vazirani(_number_of_qubits: int):
     s = random.randint(0, ((2**(_number_of_qubits-1))-1)) # le 1er -1 pour garder un qubit, le 2e -1 pour intégrer 0
     variables = VariablesStructure(_number_of_qubits)
+    binaire = bin(s)[2:]
     print("s: "+str(s))
-    print("binaire: "+str(bin(s)[2:]))
+    print("binaire: "+str(binaire))
     lastQubit = _number_of_qubits - variables.go_to_real_last_qubit
-    while variables.indexQubits < _number_of_qubits:
+    indexInverse = len(binaire) - variables.go_to_real_last_qubit
+    while indexInverse >= 0:
         # print("("+str(variables.indexQubits)+")")
+        print(binaire[indexInverse])
         try:
             # print(bin(s)[variables.indexQubits+2])
-            if (bin(s)[variables.indexQubits+2] == "1"): # cherche les qubits à l'état 1
+            if (binaire[indexInverse] == "1"): # cherche les qubits à l'état 1
                 # None
                 variables.oracle_circuit.cx(variables.indexQubits, lastQubit)
-            else:
-                variables.oracle_circuit.i(variables.indexQubits)
         # Exception se produit avec les valeurs où "s" a besoin de moins que n bits
         except Exception as e: # l'exception spécifique n'est pas spécifié pour le devoir
             None # Si la valeur dans le binaire est out of range, on ne fait rien, 
         variables.indexQubits += 1
+        indexInverse -= 1
     print(variables.oracle_circuit.decompose())
     return variables.oracle_circuit.to_gate(label="bernstein-vazirani_ORACLE")
 # Base 10: 11
