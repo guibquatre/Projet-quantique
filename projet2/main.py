@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from qiskit.visualization import plot_histogram
 from qiskit import Aer, execute
 import random
+import traceback
 # from qiskit.tools.visualization import plot_bloch_multivector
 # plot_bloch_multivector(statevec)
 # statevec = result.get_statevector()
@@ -44,7 +45,8 @@ from functools import wraps
 
 class VariablesStructure:
     gate_To_Return = None
-    deustch_Jozsa_Oracle_circuit = None
+    oracle_circuit = None
+    bernstain_vazirani_Oracle_circuit = None
     last_Qubit_To_Loop = None
     indexQubits = 0
     firstQubit = 0
@@ -52,7 +54,7 @@ class VariablesStructure:
     go_to_real_last_qubit = 1
 
     def __init__(self, number_of_qubits):
-        self.deustch_Jozsa_Oracle_circuit = QuantumCircuit(number_of_qubits)
+        self.oracle_circuit = QuantumCircuit(number_of_qubits)
         self.last_Qubit_To_Loop = number_of_qubits - \
             self.go_to_just_one_before_last_Qubit
 
@@ -176,15 +178,15 @@ def DeustchAlgo(oracleGate: QuantumCircuit):
 @number_between_1_and_0_required
 def deustch_Jozsa_Oracle_const_useCase(_oracleNumber: int, _indexQubits: int,  # -> deustch_Jozsa_Oracle_door
                                        _last_Qubit_To_Loop: int, _go_to_real_last_qubit: int,
-                                       deustch_Jozsa_Oracle_circuit: QuantumCircuit, __number_of_qubits: int):
+                                       oracle_circuit: QuantumCircuit, __number_of_qubits: int):
     while _indexQubits <= _last_Qubit_To_Loop:
-        deustch_Jozsa_Oracle_circuit.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
+        oracle_circuit.i(_last_Qubit_To_Loop) # ne rien faire en faisant quelque chose
         _indexQubits += 1
     if _oracleNumber == 0:  # f = 0, constante
-        deustch_Jozsa_Oracle_circuit.i(__number_of_qubits - _go_to_real_last_qubit)
+        oracle_circuit.i(__number_of_qubits - _go_to_real_last_qubit) # C'est l'opération importante
     elif _oracleNumber == 1:  # f = 1, constante
-        deustch_Jozsa_Oracle_circuit.x(__number_of_qubits - _go_to_real_last_qubit)
-    return deustch_Jozsa_Oracle_circuit.to_gate(label="oracle1")
+        oracle_circuit.x(__number_of_qubits - _go_to_real_last_qubit) # C'est l'opération importante
+    return oracle_circuit.to_gate(label="oracle1")
 
 
 # Retournent ces oracles sous la forme de portes quantiques à n qubits.
@@ -198,27 +200,27 @@ def choisirOracleDeustchJozsa(oracleNumber: int, _number_of_qubits: int):
         variables.gate_To_Return = deustch_Jozsa_Oracle_const_useCase(oracleNumber, variables.indexQubits,
                                                                       variables.last_Qubit_To_Loop, 
                                                                       variables.go_to_real_last_qubit,
-                                                                      variables.deustch_Jozsa_Oracle_circuit,
+                                                                      variables.oracle_circuit,
                                                                       _number_of_qubits)
 # Oracles qui implémentent des fonctions balancées.
     elif oracleNumber == 2 or oracleNumber == 3:
         variables.indexQubits = 1 # Commencer après le premier quBit
         while variables.indexQubits <= variables.last_Qubit_To_Loop:
             # ne rien faire en faisant quelque chose
-            variables.deustch_Jozsa_Oracle_circuit.i(
+            variables.oracle_circuit.i(
                 variables.last_Qubit_To_Loop)
             variables.indexQubits += 1
         if oracleNumber == 2:  # f est balancée, version originale
-            variables.deustch_Jozsa_Oracle_circuit.cx(
+            variables.oracle_circuit.cx( # C'est l'opération importante
                 variables.firstQubit, _number_of_qubits - variables.go_to_real_last_qubit)
-            variables.gate_To_Return = variables.deustch_Jozsa_Oracle_circuit.to_gate(
+            variables.gate_To_Return = variables.oracle_circuit.to_gate(
                 label="oracle2")
         elif oracleNumber == 3:  # f est balancée, version not
-            variables.deustch_Jozsa_Oracle_circuit.x(variables.firstQubit)
-            variables.deustch_Jozsa_Oracle_circuit.cx(
+            variables.oracle_circuit.x(variables.firstQubit) # C'est l'opération importante
+            variables.oracle_circuit.cx( # C'est l'opération importante
                 variables.firstQubit, _number_of_qubits - variables.go_to_real_last_qubit)
-            variables.deustch_Jozsa_Oracle_circuit.x(variables.firstQubit)
-            variables.gate_To_Return = variables.deustch_Jozsa_Oracle_circuit.to_gate(
+            variables.oracle_circuit.x(variables.firstQubit) # C'est l'opération importante
+            variables.gate_To_Return = variables.oracle_circuit.to_gate(
                 label="oracle3")
 
     return variables.gate_To_Return
@@ -231,21 +233,21 @@ def choisirOracleDeustchJozsa(oracleNumber: int, _number_of_qubits: int):
 def deustchJozsaAlgo(oracleGate: QuantumCircuit, number_of_qubits: int):
     variables = VariablesStructure(number_of_qubits)
     while variables.indexQubits <= variables.last_Qubit_To_Loop:
-        variables.deustch_Jozsa_Oracle_circuit.h(variables.indexQubits)
+        variables.oracle_circuit.h(variables.indexQubits)
         variables.indexQubits += 1
-    variables.deustch_Jozsa_Oracle_circuit.x(number_of_qubits - variables.go_to_real_last_qubit)
-    variables.deustch_Jozsa_Oracle_circuit.h(number_of_qubits - variables.go_to_real_last_qubit)
+    variables.oracle_circuit.x(number_of_qubits - variables.go_to_real_last_qubit)
+    variables.oracle_circuit.h(number_of_qubits - variables.go_to_real_last_qubit)
     variables.indexQubits = 0
     list_index_to_append = []
     while variables.indexQubits < number_of_qubits:
         list_index_to_append.append(variables.indexQubits)
         variables.indexQubits += 1
-    variables.deustch_Jozsa_Oracle_circuit.append(oracleGate, list_index_to_append)
+    variables.oracle_circuit.append(oracleGate, list_index_to_append)
     variables.indexQubits = 0
     while variables.indexQubits <= variables.last_Qubit_To_Loop:
-        variables.deustch_Jozsa_Oracle_circuit.h(variables.indexQubits)
+        variables.oracle_circuit.h(variables.indexQubits)
         variables.indexQubits += 1
-    return variables.deustch_Jozsa_Oracle_circuit.to_gate(label="deustch-jozsa-circuit")
+    return variables.oracle_circuit.to_gate(label="deustch-jozsa-circuit")
 #                ┌───┐     ┌──────────┐┌───┐┌─┐         
 # quantumReg2_0: ┤ H ├─────┤0         ├┤ H ├┤M├─────────
 #                ├───┤     │          │├───┤└╥┘┌─┐      
@@ -267,12 +269,62 @@ def deustchJozsaAlgo(oracleGate: QuantumCircuit, number_of_qubits: int):
 # END DEUSTCH-JOZSA -----------------------------------------------------------------------------------------
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# — Programmer une fonction qui prend en entrée un nombre de qubits n ainsi qu’un entier entre 0 et
+# 2n − 1 et qui retourne l’oracle correspondant sous la forme d’une porte quantique.
+# — Programmer une fonction qui construit le circuit quantique pour l’algorithme de Bernstein-Vazirani
+# à partir d’une porte quantique obtenue à l’étape précédente.
+# — Exécuter ce circuit et vérifier que les résultats concordent avec l’oracle utilisé.
+# Start Bernstein-Vazirani ----------------------------------------------------------------------------
+def choisirOracleBernstein_Vazirani(oracleNumber: int, _number_of_qubits: int):
+    s = random.randint(0, ((2**_number_of_qubits)-1))
+    variables = VariablesStructure(_number_of_qubits)
+    print(s)
+    print(bin(s)[2:])
+    while variables.indexQubits < _number_of_qubits:
+        print("("+str(variables.indexQubits)+")")
+        try:
+            print(bin(s)[variables.indexQubits+2])
+            if (bin(s)[variables.indexQubits+2] == "1"): # cherche les qubits
+                None 
+                # variables.oracle_circuit.cx()
+        # Se produit avec les valeurs où "s" a besoin de moins que n bits
+        except Exception as e:
+            None # Si la valeur dans le binaire est out of range, on ne fait rien, 
+        variables.indexQubits += 1
+        
+
+    
+
+
+
+
+
+
 if __name__ == "__main__":
     # indexOracles = 0
-    # # Deustch Start ----------------------------------------------
+    # # Deustch START ----------------------------------------------------------
     # while indexOracles < 4:
     #     qreg = QuantumRegister(2, "quest1")
-    #     creg = ClassicalRegister(1, "c")
+    #     creg = ClassicalRegister(1, "c")# 2.3
+
     #     deustch = QuantumCircuit(qreg, creg)
     #     deustch.append(DeustchAlgo(
     #         choisirOracleDeDeustch(indexOracles)), [0, 1])
@@ -286,41 +338,43 @@ if __name__ == "__main__":
     #     # print(countsDeustch)
     #     plt.show()
     #     indexOracles += 1
-    # Deustch End -------------------------------------------------
-    indexOracles = 0
-    # Deustch-Jozsa Start ----------------------------------------------
-    while indexOracles < 4:
-        randomNumber = random.randint(2, 2**3) # Maximum choisi arbitrairement
-        variables = VariablesStructure(randomNumber)
-        lastToMeasure = randomNumber - variables.go_to_just_one_before_last_Qubit
-        qreg2 = QuantumRegister(randomNumber, "quantumReg2")
-        creg2 = ClassicalRegister(randomNumber - variables.go_to_real_last_qubit, "classicReg2")
-        deustch_jozsa = QuantumCircuit(qreg2, creg2)
-        _deustchJozsaAlgo = deustchJozsaAlgo(choisirOracleDeustchJozsa(indexOracles, randomNumber), randomNumber)
+    # Deustch END --------------------------------------------------------------------
+    # Deustch-Jozsa START --------------------------------------------------------------
+    # indexOracles = 0
+    # while indexOracles < 4:
+    #     randomNumber = random.randint(2, 2**3) # Maximum choisi arbitrairement
+    #     variables = VariablesStructure(randomNumber)
+    #     lastToMeasure = randomNumber - variables.go_to_just_one_before_last_Qubit
+    #     qreg2 = QuantumRegister(randomNumber, "quantumReg2")
+    #     creg2 = ClassicalRegister(randomNumber - variables.go_to_real_last_qubit, "classicReg2")
+    #     deustch_jozsa = QuantumCircuit(qreg2, creg2)
+    #     _deustchJozsaAlgo = deustchJozsaAlgo(choisirOracleDeustchJozsa(indexOracles, randomNumber), randomNumber)
 
-        # Construire une liste pour l'argument de append(), (patch)
-        list_index_to_append = []
-        while variables.indexQubits < randomNumber:
-            list_index_to_append.append(variables.indexQubits)
-            variables.indexQubits += 1
+    #     # Construire une liste pour l'argument de append(), (patch)
+    #     list_index_to_append = []
+    #     while variables.indexQubits < randomNumber:
+    #         list_index_to_append.append(variables.indexQubits)
+    #         variables.indexQubits += 1
 
-        deustch_jozsa.append(_deustchJozsaAlgo, list_index_to_append)
+    #     deustch_jozsa.append(_deustchJozsaAlgo, list_index_to_append)
         
-        variables.indexQubits = 0
-
-        while variables.indexQubits <= lastToMeasure:
-            deustch_jozsa.measure(variables.indexQubits, variables.indexQubits)
-            variables.indexQubits += 1
+    #     variables.indexQubits = 0
+    #     while variables.indexQubits <= lastToMeasure:
+    #         deustch_jozsa.measure(variables.indexQubits, variables.indexQubits)
+    #         variables.indexQubits += 1
             
-        qasm_simulator = Aer.get_backend("qasm_simulator")
-        jobDeustchJozsa = execute(deustch_jozsa, qasm_simulator, shots=1000)
-        countsDeustchJozsa = jobDeustchJozsa.result().get_counts()
-        plot_histogram(countsDeustchJozsa, title="Deustch-Jozsa_Oracle_Result"+str(indexOracles))
-        print(deustch_jozsa.decompose())
-        print(countsDeustchJozsa)
-        plt.show()
-        indexOracles += 1
-    # Deustch-Jozsa End -------------------------------------------------
+    #     qasm_simulator = Aer.get_backend("qasm_simulator")
+    #     jobDeustchJozsa = execute(deustch_jozsa, qasm_simulator, shots=1000)
+    #     countsDeustchJozsa = jobDeustchJozsa.result().get_counts()
+    #     plot_histogram(countsDeustchJozsa, title="Deustch-Jozsa_Oracle_Result"+str(indexOracles))
+    #     print(deustch_jozsa.decompose())
+    #     print(countsDeustchJozsa)
+    #     plt.show()
+    #     indexOracles += 1
+    # Deustch-Jozsa END --------------------------------------------------------------------------
+    # Bernstain-Vazirani START--------------------------------------------------------------------
+    choisirOracleBernstein_Vazirani(3, 5)
+    # Bernstain-Vazirani END--------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------------------
 
