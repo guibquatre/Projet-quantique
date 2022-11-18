@@ -223,24 +223,16 @@ def deustchJozsaAlgo(oracleGate: QuantumCircuit, number_of_qubits: int): # -> Qu
 # END DEUSTCH-JOZSA -----------------------------------------------------------------------------------------
 # START ORACLE Bernstein-Vazirani ----------------------------------------------------------------------------
 def choisirOracleBernstein_Vazirani(_number_of_qubits: int):
-    s = random.randint(1, ((2**(_number_of_qubits-1))-1)) # le 1er -1 pour garder un qubit, le 2e -1 pour intégrer 0
+    s = random.randint(1, ((2**(_number_of_qubits-1))-1))
     variables = VariablesStructure(_number_of_qubits)
     binaire = bin(s)[2:]
     print("s: "+str(s))
     print("binaire: "+str(binaire))
     lastQubit = _number_of_qubits - variables.go_to_real_last_qubit
-    indexInverse = len(binaire) - variables.go_to_real_last_qubit
+    indexInverse = len(binaire) - 1
     while indexInverse >= 0:
-        # print("("+str(variables.indexQubits)+")")
-        print(binaire[indexInverse])
-        try:
-            # print(bin(s)[variables.indexQubits+2])
-            if (binaire[indexInverse] == "1"): # cherche les qubits à l'état 1
-                # None
-                variables.oracle_circuit.cx(variables.indexQubits, lastQubit)
-        # Exception se produit avec les valeurs où "s" a besoin de moins que n bits
-        except Exception as e: # l'exception spécifique n'est pas spécifié pour le devoir
-            None # Si la valeur dans le binaire est out of range, on ne fait rien, 
+        if (binaire[indexInverse] == "1"): # cherche les qubits à l'état 1
+            variables.oracle_circuit.cx(variables.indexQubits, lastQubit)
         variables.indexQubits += 1
         indexInverse -= 1
     print(variables.oracle_circuit.decompose())
@@ -341,7 +333,7 @@ if __name__ == "__main__":
     qasm_simulator = Aer.get_backend("qasm_simulator")
     jobDeustchJozsa = execute(deustch_jozsa, qasm_simulator, shots=1000)
     countsDeustchJozsa = jobDeustchJozsa.result().get_counts()
-    plot_histogram(countsDeustchJozsa, title="Deustch-Jozsa_Oracle_Result")
+    plot_histogram(countsDeustchJozsa, title="Bernstein-Vazirani_Oracle_Result")
     print(deustch_jozsa.decompose())
     print(countsDeustchJozsa)
     plt.show()
