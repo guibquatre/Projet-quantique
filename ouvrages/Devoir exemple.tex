@@ -1,0 +1,129 @@
+\documentclass[11pt]{article}
+
+\usepackage[french]{babel}
+
+\usepackage[T1]{fontenc}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage[shortlabels]{enumitem}
+
+\usepackage[margin=2cm]{geometry}
+
+\usepackage{mathtools}
+\usepackage{siunitx}
+\usepackage{physics}
+
+\makeatletter
+   \def\vhrulefill#1{\leavevmode\leaders\hrule\@height#1\hfill \kern\z@}
+\makeatother
+
+\newcounter{exercicecounter}
+\newenvironment{exercice}[1]{
+\refstepcounter{exercicecounter}
+\noindent\rule{0.05\textwidth}{1pt}\,\,\raisebox{-.3\ht\strutbox}{\textbf{Exercice \theexercicecounter : #1}}\,\,\vhrulefill{1pt}\par\vspace{0.4cm}
+}{\par} 
+
+\newcounter{exersolcounter}
+\newenvironment{solutionexercice}[1][\theimplcounter]{
+\color{gray}
+\refstepcounter{exersolcounter}
+\noindent\rule{0.05\textwidth}{1pt}\,\,\raisebox{-.3\ht\strutbox}{\textbf{Solution exercice #1}}\,\,\vhrulefill{1pt}\par\vspace{0.4cm}
+}{\par}
+
+\newcounter{questioncounter}
+\newenvironment{question}[1]{
+\refstepcounter{questioncounter}
+\noindent\rule{0.05\textwidth}{1pt}\,\,\raisebox{-.3\ht\strutbox}{\textbf{Question \thequestioncounter : #1}}\,\,\vhrulefill{1pt}\par\vspace{0.4cm}
+}{\par}
+
+
+\begin{document}
+
+\begin{center}
+    {\Large BSQ 110 - Introduction aux sciences quantiques et à leurs applications} \\ \vspace{5mm}
+    {\LARGE\sffamily Exercices et Questions \#1} \\
+    Les réponses aux \textbf{exercices} ne sont pas à remettre.\\
+    Les réponses aux \textbf{questions} sont à remettre le vendredi 16 septembre 2022.
+\end{center}
+
+\begin{exercice}{Simplifications complexes\label{exer:1}}
+    Simplifiez les expressions suivantes en effectuant les multiplications. Gardez la forme exponentielle autant que possible.
+    \begin{multicols}{3}
+        \begin{enumerate}[a)]
+            \item $\pqty{a+ib}\pqty{c+id}$
+            \item $\pqty{a+ib}\pqty{a-ib}$
+            \item $e^{i\pi/2}\pqty{a+ib}$
+            \item $e^{i\pi/3}e^{i\pi/6}$
+            \item $e^{i\theta}e^{i\phi}e^{-i\omega}$
+            \item $e^{i\pi/2}e^{i\pi/4}e^{i\pi/8}$
+        \end{enumerate}
+    \end{multicols}
+\end{exercice}
+
+\begin{exercice}{Conversion de nombres complexes\label{exer:2}}
+    Convertissez les nombres complexes suivants qui sont sous formes algébriques en leurs formes exponentielles et vice versa.
+    \begin{multicols}{3}
+        \begin{enumerate}[a)]
+            \item $\frac{1-i}{\sqrt{2}}$
+            \item $e^{i\pi/3}$
+            \item $2e^{-i\pi/2}$
+            \item $4e^{i\pi}$
+            \item $\cos\pqty{\theta} - i \sin\pqty{\theta}$
+            \item $\frac{\sqrt{3}}{2} - i\frac{1}{2}$
+        \end{enumerate}
+    \end{multicols}
+\end{exercice}
+
+\begin{question}{Rotations complexes}
+    La multiplication par un nombre complexe permet d'effectuer une rotation dans le plan complexe. Donnez l'angle de la rotation provoquée par la multiplication des nombres complexes suivants. Supposez une rotation dans le sens contraire des aiguilles d'une montre. Les angles négatifs sont admissibles.
+    \begin{multicols}{3}
+        \begin{enumerate}[a)]
+            \item $-i$
+            \item $i^3$
+            \item $\sqrt{i}$
+        \end{enumerate}
+    \end{multicols}
+\end{question}
+
+\begin{question}{Identité trigonométrique}
+    En utilisant la formule d'Euler, démontrez l'identité trigonométrique
+    \begin{align*}
+        \cos\pqty{a+b} = \cos a \cos b - \sin a \sin b.
+    \end{align*}
+    Indice : considérez le produit $e^{ia}e^{ib}$.
+\end{question}
+
+\newpage
+
+\begin{solutionexercice}[\ref{exer:1}]
+    \begin{enumerate}[a)]
+        \item $\pqty{a+ib}\pqty{c+id} = ac + iad + ibc - bd$
+        \item $\pqty{a+ib}\pqty{a-ib} = a^2 + b^2$
+        \item $e^{i\pi/2}\pqty{a+ib} = ia - b$
+        \item $e^{i\pi/3}e^{i\pi/6} = e^{i2\pi/6}e^{i\pi/6} = e^{i3\pi/6} = e^{i\pi/2}$
+        \item $e^{i\theta}e^{i\phi}e^{-i\omega} = e^{i\pqty{\theta + \phi - \omega}}$
+        \item $e^{i\pi/2}e^{i\pi/4}e^{i\pi/8} = e^{i4\pi/8}e^{i2\pi/8}e^{i\pi/8} = e^{i7\pi/8}$
+    \end{enumerate}
+\end{solutionexercice}
+
+\begin{solutionexercice}[\ref{exer:2}]
+    \begin{enumerate}[a)]
+        \item $\frac{1-i}{\sqrt{2}} = e^{-i\pi/4}$
+        \item $e^{i\pi/3} = \cos\pi/3 + i\sin\pi/3 = \frac{1}{2} + i \frac{\sqrt{3}}{2} $
+        \item $2e^{-i\pi/2} = -2i$
+        \item $4e^{i\pi} = -4$
+        \item $\cos\pqty{\theta} - i \sin\pqty{\theta} = \cos\pqty{-\theta} + i \sin\pqty{-\theta} = e^{-i\theta}$
+        \item $\frac{\sqrt{3}}{2} - i\frac{1}{2} = e^{-i\pi/6}$
+    \end{enumerate}
+\end{solutionexercice}
+
+
+\end{document}
+
